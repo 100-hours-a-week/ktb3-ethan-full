@@ -14,7 +14,7 @@
 
 ## 도메인 모델 (UML)
 
-![UML Diagram](src/main/java/domain/uml.png)
+![UML Diagram](src/main/java/domain/uml.jpg)
 
 ## 📂 프로젝트 구조
 
