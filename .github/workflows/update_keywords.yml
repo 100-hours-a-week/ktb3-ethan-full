@@ -11,6 +11,10 @@ on:
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      
     steps:
       # 1. 레포지토리 코드를 워크플로우 환경으로 가져옵니다.
       - name: Checkout repository
