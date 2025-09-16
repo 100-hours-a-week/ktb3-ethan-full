@@ -1,0 +1,21 @@
+JDK
+
+JRE
+
+JVM
+
+바이트코드
+
+클래스로더
+
+실행엔진(Execution Engine)
+
+JIT 컴파일러
+
+JVM 메모리 영역(런타임 데이터 영역)
+
+(선택)PermGen과 Metaspace
+
+(선택)String pool
+
+(선택)Garbage Collection
