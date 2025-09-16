@@ -1,0 +1,35 @@
+GC Root
+
+Mark & Sweep & Compaction
+
+Minor GC vs Major GC vs Full GC
+
+Stop-The-World
+
+GC 알고리즘 (Parallel GC, G1 GC)
+
+primitive type
+
+reference type
+
+wrapper class
+
+오토박싱/언박싱
+
+String의 불변성
+
+String Constant Pool
+
+클래스
+
+객체와 인스턴스
+
+상속
+
+extends
+
+super
+
+(선택)다형성
+
+(선택)오버라이딩
