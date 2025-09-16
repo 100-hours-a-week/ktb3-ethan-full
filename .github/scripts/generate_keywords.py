@@ -12,8 +12,14 @@ def generate_keyword_table():
             [f for f in os.listdir(keyword_dir) if re.match(r'w\d+-d\d+\.txt', f)],
             key=lambda x: (int(re.search(r'w(\d+)', x).group(1)), int(re.search(r'd(\d+)', x).group(1)))
         )
+        # 디버깅을 위해 찾은 파일 목록을 출력합니다.
+        print(f"✅ Found keyword files: {txt_files}")
+        if not txt_files:
+            print("⚠️ No keyword files found. Nothing to update.")
+            return
+
     except FileNotFoundError:
-        print(f"Error: '{keyword_dir}' directory not found.")
+        print(f"❌ Error: '{keyword_dir}' directory not found.")
         return
 
     all_markdown_blocks = []
@@ -26,7 +32,6 @@ def generate_keyword_table():
             
         week, day = match.groups()
         
-        # 토글 메뉴 시작
         markdown_lines = [
             f"<details>",
             f"<summary><strong>{week}주차 {day}일차 수업 키워드</strong></summary>\n",
@@ -34,17 +39,23 @@ def generate_keyword_table():
             "|:---|:---|"
         ]
         
-        # .txt 파일의 내용을 읽어 테이블 행으로 추가
         file_path = os.path.join(keyword_dir, filename)
         with open(file_path, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
+                if not line:  # 빈 줄은 건너뜁니다.
+                    continue
+
+                # 👇 콜론(:)이 없는 경우도 처리하도록 수정된 부분
                 if ':' in line:
                     keyword, definition = line.split(':', 1)
-                    # 마크다운 테이블에서 | 문자가 깨지지 않도록 처리
                     keyword = keyword.strip().replace('|', '\|')
                     definition = definition.strip().replace('|', '\|')
-                    markdown_lines.append(f"| {keyword} | {definition} |")
+                else:
+                    keyword = line.strip().replace('|', '\|')
+                    definition = ''  # 콜론이 없으면 '정리' 부분을 비워둡니다.
+                
+                markdown_lines.append(f"| {keyword} | {definition} |")
 
         markdown_lines.append("\n</details>\n")
         all_markdown_blocks.append("\n".join(markdown_lines))
@@ -57,7 +68,7 @@ def generate_keyword_table():
         start_marker = ''
         end_marker = ''
         
-        # 주석 사이의 내용을 새로 생성된 마크다운 블록으로 교체
+        # 주석 사이의 내용을 새로 생성된 마크다운 블록으로 '완전히' 교체합니다.
         content_to_insert = "\n".join(all_markdown_blocks)
         new_readme_content = re.sub(
             f"({re.escape(start_marker)})(.*?)({re.escape(end_marker)})",
@@ -71,9 +82,9 @@ def generate_keyword_table():
         print("✅ README.md has been successfully updated.")
 
     except FileNotFoundError:
-        print(f"Error: '{readme_path}' not found. Please create it first.")
+        print(f"❌ Error: '{readme_path}' not found. Please create it first.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"❌ An error occurred: {e}")
 
 
 if __name__ == "__main__":
