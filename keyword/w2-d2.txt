@@ -24,7 +24,7 @@ shutdown() vs shutdownNow(): 대기 큐의 남은 작업을 끝낸 후 정상 �
 
 Thread Pool: 스레드를 미리 생성해두고, 작업이 끝난 후 스레드를 재사용하기 위한 영역
 
-corePoolSize: 
+corePoolSize
 
 maximumPoolSize
 
