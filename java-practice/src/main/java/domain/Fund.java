@@ -1,33 +1,42 @@
 package domain;
 
+import dto.FundUpdateResult;
+import dto.UpdateResult;
+
 import java.util.Random;
 
 public class Fund extends InvestmentProduct {
+    private final double MAX_PROFIT_RATE_PER_RISK;
+    private final double MAX_LOSS_RATE_PER_RISK;
+
     public Fund(long initialValue, String productName, int riskLevel) {
         super(initialValue, productName, riskLevel);
+        // riskLevel에 따라 변동폭을 인스턴스 변수로 설정
+        this.MAX_PROFIT_RATE_PER_RISK = riskLevel * 4.0;
+        this.MAX_LOSS_RATE_PER_RISK = riskLevel * 3.0;
     }
 
     @Override
-    public void updateValue() {
-        // -(risk * 7)% ~ +(risk * 10)% 사이의 무작위 월 수익률 시뮬레이션
-
+    public UpdateResult updateValue() {
         if (balance == 0) {
-            System.out.printf("[!!!] '%s' 펀드의 잔액이 0원입니다. 변동사항 없습니다.\n", this.productName);
-            return;
+            return new FundUpdateResult(this.productName, 0, 0, 0, false);
         }
-        final double rate = ((new Random()).nextDouble() * 17 - 7) / 100.0;
-        long change = (long) (balance * rate);
+
+        double rateRange = MAX_PROFIT_RATE_PER_RISK + MAX_LOSS_RATE_PER_RISK;
+        final double rate = (new Random().nextDouble() * rateRange - MAX_LOSS_RATE_PER_RISK) / 100.0;
+        final long change = (long) (balance * rate);
 
         balance += change;
 
+        boolean isBankrupt = false;
         if (balance <= 0) {
-            System.out.printf("[!!!] %s 펀드의 가치가 0원이 되었습니다. (전액 손실)\n", this.productName);
             balance = 0;
-        } else {
-            System.out.printf("[알림] %s 펀드의 가치가 %,d원 변동했습니다. (수익률: %.2f%%)\n",
-                    this.productName, change, rate * 100);
+            isBankrupt = true;
         }
+
+        return new FundUpdateResult(this.productName, change, rate, this.balance, isBankrupt);
     }
+
     public long getBalance() {
         return this.balance;
     }

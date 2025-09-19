@@ -8,15 +8,19 @@ public class Player {
     }
 
     public boolean spendCash(long amount) {
-        if (this.cash >= amount) {
+        if (amount > 0 && amount <= this.cash) {
             this.cash -= amount;
             return true;
         }
         return false;
     }
 
-    public void earnCash(long amount) {
-        this.cash += amount;
+    public boolean earnCash(long amount) {
+        if (amount > 0) {
+            this.cash += amount;
+			return true;
+        }
+		return false;
     }
 
     public long getCash() {

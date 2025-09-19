@@ -1,24 +1,27 @@
 package domain;
 
-public class SavingAccount extends BankAccount {
-    private double intersetRate;
+import dto.AccountUpdateResult;
+import dto.UpdateResult;
 
-    public SavingAccount(long initialBalance, String bankName, String accountNumber, double intersetRate) {
+public class SavingAccount extends BankAccount {
+    private double interestRate;
+
+    public SavingAccount(long initialBalance, String bankName, String accountNumber, double interestRate) {
         super(initialBalance, bankName, accountNumber);
-        this.intersetRate = intersetRate;
+        this.interestRate = interestRate;
     }
 
     @Override
-    public void updateValue() {
-        long interest = (long) (balance * intersetRate / 12);
+    public UpdateResult updateValue() {
+        long interest = (long) (balance * interestRate / 12);
         balance += interest;
-        System.out.printf("[알림] %s 예금 계좌에 월 이사 %,d원이 지급되었습니다.\n", bankName, interest);
+        return new AccountUpdateResult(this.bankName, interest, this.balance);
     }
 
     @Override
     public String toString() {
         return "-----< 일반 예금 >-----\n"
                 + super.toString()
-                + "[이자율] : " + (intersetRate * 100) + "%\n";
+                + "[이자율] : " + (interestRate * 100) + "%\n";
     }
 }

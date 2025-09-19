@@ -1,9 +1,11 @@
 package domain;
 
+import dto.UpdateResult;
+
 public abstract class FinancialProduct {
     long balance;
 
-    public  FinancialProduct(long initialBalance) {
+    public FinancialProduct(long initialBalance) {
         this.balance = initialBalance;
     }
 
@@ -15,14 +17,14 @@ public abstract class FinancialProduct {
         return false;
     }
     public boolean withdraw(long amount) {
-        if (amount > 0 && this.balance >= amount) {
+        if (amount > 0 && amount <= this.balance) {
             this.balance -= amount;
             return true;
         }
         return false;
     }
 
-    public abstract void updateValue();
+    public abstract UpdateResult updateValue();
 
     public String toString() {
         return "[잔액]   : " + this.balance + "원\n";
