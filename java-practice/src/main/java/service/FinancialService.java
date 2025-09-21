@@ -1,6 +1,8 @@
 package service;
 
 import dto.*;
+import msg.AccountMsg;
+import msg.FundMsg;
 
 import java.util.List;
 
@@ -15,46 +17,56 @@ public class FinancialService {
         this.investmentService = new InvestmentService(accountService);
     }
 
-	public String showSavingsAccountInfo() {
+	public synchronized String showSavingsAccountInfo() {
 		return accountService.showAccountInfo();
 	}
 
-    public long getPlayerCash() {
+    public synchronized long getPlayerCash() {
         return playerService.getCash();
     }
 
-    public TransactionStatus depositToSavings(long amount) {
+    public synchronized TransactionStatus depositToSavings(long amount) {
         return accountService.deposit(amount);
     }
 
-    public TransactionStatus withdrawFromSavings(long amount) {
+    public synchronized TransactionStatus withdrawFromSavings(long amount) {
         return accountService.withdraw(amount);
     }
 
-	public String showAllFunds() {
+	public synchronized String showAllFunds() {
 		return investmentService.showAllFunds();
 	}
 
-
-
-
-
-
-    public FundCreationStatus createFund(String fundName, long amount, int riskLevel) {
+    public synchronized FundCreationStatus createFund(String fundName, long amount, int riskLevel) {
         return investmentService.createFund(fundName, amount, riskLevel);
     }
 
-    public FundLiquidationResult liquidateFund(int index) {
+    public synchronized FundLiquidationResult liquidateFund(int index) {
         return investmentService.liquidateFund(index);
     }
 
+    public synchronized String passOneWeek() {
+        List<FundUpdateResult> fundUpdateResults = investmentService.updateAllFundValues();
+		StringBuilder sb = new StringBuilder();
+        for (FundUpdateResult result : fundUpdateResults) {
+            String message;
+            if (result.isBankrupt()) {
+                message = FundMsg.BANKRUPT.format(result.productName());
+            } else if (result.changeAmount() == 0) {
+                message = FundMsg.NO_CHANGE.format(result.productName());
+            } else {
+                message = FundMsg.UPDATE.format(result.productName(), result.changeAmount(), result.rate() * 100, result.finalBalance());
+            }
+			sb.append(message);
+        }
+		return sb.toString();
+	}
 
-
-    public AccountUpdateResult updateSavingsAccount() {
-        return accountService.updateValue();
-    }
-
-    public List<FundUpdateResult> updateAllFunds() {
-        return investmentService.updateAllFundValues();
+    public synchronized String processMonthlyInterest() {
+        AccountUpdateResult result = accountService.updateValue();
+		if (result != null && result.interest() > 0) {
+			return AccountMsg.UPDATE_INTEREST.format(result.bankName(), result.interest(), result.finalBalance());
+		}
+		return "";
     }
 }

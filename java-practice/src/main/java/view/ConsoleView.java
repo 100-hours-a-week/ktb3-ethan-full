@@ -25,8 +25,7 @@ public class ConsoleView {
     private void initCommands(FinancialService service) {
         mainCommands.put(1, new HandleSavingsAccountMenuCommand(service, sc));
         mainCommands.put(2, new HandleFundMenuCommand(service, sc));
-        mainCommands.put(3, new PassOneMonthCommand(service));
-        mainCommands.put(4, new ExitCommand());
+        mainCommands.put(3, new ExitCommand());
     }
 
     public void run() {

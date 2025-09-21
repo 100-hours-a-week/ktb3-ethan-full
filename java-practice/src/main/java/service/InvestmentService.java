@@ -37,10 +37,8 @@ public class InvestmentService {
             Fund fund = funds.remove(index);
             final long returnAmount = fund.getBalance();
             accountService.depositFromInvestment(returnAmount);
-            // 성공 시, 상태와 결과 데이터를 DTO에 담아 반환
             return new FundLiquidationResult(FundLiquidationStatus.SUCCESS, fund.getProductName(), returnAmount);
         } else {
-            // 실패 시, 실패 상태만 담아 반환
             return new FundLiquidationResult(FundLiquidationStatus.INVALID_INDEX, null, 0);
         }
     }
