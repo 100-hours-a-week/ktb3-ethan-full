@@ -1,6 +1,9 @@
 package msg;
 
 public enum AccountMsg implements Msg {
+	MONTH_PASSED_HEADER("================== 한 달이 경과했습니다 ==================\n"),
+	MONTH_PASSED_FOOTER("=======================================================\n"),
+
     DEPOSIT_PROMPT("입금할 금액(보유 현금 %,d원): "),
     DEPOSIT_SUCCESS("현금 %,d원을 예금 계좌에 입금했습니다.\n"),
     DEPOSIT_FAIL_INSUFFICIENT_MONEY("입금 실패: 보유 현금이 부족합니다. (보유 현금: %,d원)\n"),
