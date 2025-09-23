@@ -1,50 +1,21 @@
 import os
 import re
 
-def update_readme_safely(readme_path, content_to_insert):
-    """파일을 한 줄씩 분석하여 안정적으로 내용을 교체합니다."""
-    start_marker = ''
-    end_marker = ''
-
-    try:
-        with open(readme_path, 'r', encoding='utf-8') as f:
-            lines = f.readlines()
-    except FileNotFoundError:
-        print(f"❌ Error: '{readme_path}' not found. Please create it first.")
-        return
-
-    # 시작 마커와 끝 마커의 위치를 찾습니다.
-    try:
-        start_index = next(i for i, line in enumerate(lines) if start_marker in line)
-        end_index = next(i for i, line in enumerate(lines) if end_marker in line)
-    except StopIteration:
-        print(f"❌ Error: Markers '{start_marker}' or '{end_marker}' not found in README.")
-        return
-        
-    # 마커 사이의 기존 내용을 삭제하고 새로운 내용으로 교체합니다.
-    new_content_lines = content_to_insert.splitlines(True) # 줄바꿈 유지
-    
-    # 새로운 README 내용을 조립합니다.
-    new_readme_lines = (
-        lines[:start_index + 1] + 
-        ['\n'] +
-        new_content_lines + 
-        ['\n'] +
-        lines[end_index:]
-    )
-
+# 1) 기존 내용뒤에 이어쓰는게 아니라 전부 지우고 새로 쓰는방식으로 변경
+def overwrite_readme(readme_path, content_to_insert):
+    """파일의 전체 내용을 새로 작성합니다."""
     with open(readme_path, 'w', encoding='utf-8') as f:
-        f.writelines(new_readme_lines)
-    print("✅ README.md has been successfully and safely updated.")
+        f.write(content_to_insert)
+    print(f"✅ {os.path.basename(readme_path)} has been successfully updated.")
 
 
 def generate_keyword_table():
     keyword_dir = 'keyword'
     
     try:
+        # 2) 기록을 하기전에 텍스트파일 제목을 기준으로 정렬
         txt_files = sorted(
-            [f for f in os.listdir(keyword_dir) if re.match(r'w\d+-d\d+\.txt', f)],
-            key=lambda x: (int(re.search(r'w(\d+)', x).group(1)), int(re.search(r'd(\d+)', x).group(1)))
+            [f for f in os.listdir(keyword_dir) if re.match(r'w\d+-d\d+\.txt', f)]
         )
         print(f"✅ Found keyword files: {txt_files}")
     except FileNotFoundError:
@@ -82,9 +53,9 @@ def generate_keyword_table():
         markdown_lines.append("\n</details>")
         all_markdown_blocks.append("\n".join(markdown_lines))
 
-    # 생성된 전체 내용을 안전하게 README에 삽입합니다.
+    # 생성된 전체 내용을 README에 삽입합니다.
     content_to_insert = "\n\n".join(all_markdown_blocks)
-    update_readme_safely(os.path.join(keyword_dir, 'README.md'), content_to_insert)
+    overwrite_readme(os.path.join(keyword_dir, 'README.md'), content_to_insert)
 
 
 if __name__ == "__main__":
