@@ -1,4 +1,0 @@
-
-A/doc1.md -> A/B/doc2.md
-A/B/C/doc3.md -> A/doc1.md
-doc4.md -- D/doc5.md
