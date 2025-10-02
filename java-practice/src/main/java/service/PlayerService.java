@@ -9,15 +9,15 @@ public class PlayerService {
         this.player = new Player();
 	}
 
-    public long getCash() {
+    public synchronized long getCash() {
         return player.getCash();
     }
 
-    public boolean spendCash(long amount) {
+    public synchronized boolean spendCash(long amount) {
         return player.spendCash(amount);
     }
 
-    public boolean earnCash(long amount) {
+    public synchronized boolean earnCash(long amount) {
         return player.earnCash(amount);
     }
 }

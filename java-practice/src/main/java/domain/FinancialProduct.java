@@ -3,11 +3,14 @@ package domain;
 import dto.UpdateResult;
 
 public abstract class FinancialProduct {
-    long balance;
+    private long balance;
 
     public FinancialProduct(long initialBalance) {
         this.balance = initialBalance;
     }
+	public long getBalance() {
+		return this.balance;
+	}
 
     public boolean deposit(long amount) {
         if (amount > 0) {
