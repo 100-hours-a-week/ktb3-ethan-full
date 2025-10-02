@@ -17,31 +17,31 @@ public class FinancialService {
         this.investmentService = new InvestmentService(accountService);
     }
 
-	public synchronized String showSavingsAccountInfo() {
+	public String showSavingsAccountInfo() {
 		return accountService.showAccountInfo();
 	}
 
-    public synchronized long getPlayerCash() {
-        return playerService.getCash();
+    public long getPlayerCash() {
+		return playerService.getCash();
     }
 
-    public synchronized TransactionStatus depositToSavings(long amount) {
-        return accountService.deposit(amount);
+    public TransactionStatus depositToSavings(long amount) {
+		return accountService.deposit(amount);
     }
 
-    public synchronized TransactionStatus withdrawFromSavings(long amount) {
+    public TransactionStatus withdrawFromSavings(long amount) {
         return accountService.withdraw(amount);
     }
 
-	public synchronized String showAllFunds() {
+	public String showAllFunds() {
 		return investmentService.showAllFunds();
 	}
 
-    public synchronized FundCreationStatus createFund(String fundName, long amount, int riskLevel) {
-        return investmentService.createFund(fundName, amount, riskLevel);
+    public FundCreationStatus createFund(FundCreationRequestDto request) {
+        return investmentService.createFund(request.getFundName(), request.getAmount(), request.getRiskLevel());
     }
 
-    public synchronized FundLiquidationResult liquidateFund(int index) {
+    public FundLiquidationResult liquidateFund(int index) {
         return investmentService.liquidateFund(index);
     }
 

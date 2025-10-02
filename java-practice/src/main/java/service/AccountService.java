@@ -13,11 +13,11 @@ public class AccountService {
         this.playerService = playerService;
     }
 
-	public String showAccountInfo() {
+	public synchronized String showAccountInfo() {
 		return account.toString();
 	}
 
-    public TransactionStatus deposit(long amount) {
+    public synchronized TransactionStatus deposit(long amount) {
         if (amount <= 0) {
             return TransactionStatus.INVALID_AMOUNT;
         }
@@ -28,7 +28,7 @@ public class AccountService {
         }
     }
 
-    public TransactionStatus withdraw(long amount) {
+    public synchronized TransactionStatus withdraw(long amount) {
         if (amount <= 0) {
             return TransactionStatus.INVALID_AMOUNT;
         }
@@ -38,20 +38,22 @@ public class AccountService {
             return TransactionStatus.INSUFFICIENT_FUNDS;
         }
     }
-
-
     
     public boolean withdrawForInvestment(long amount) {
-        return account.withdraw(amount);
+		synchronized (account) {
+			return account.withdraw(amount);
+		}
     }
 
     public void depositFromInvestment(long amount) {
-        account.deposit(amount);
+		synchronized (account) {
+			account.deposit(amount);
+		}
     }
 
-
-
-    public AccountUpdateResult updateValue() {
-        return (AccountUpdateResult) account.updateValue();
+    public synchronized AccountUpdateResult updateValue() {
+		synchronized (account) {
+			return (AccountUpdateResult) account.updateValue();
+		}
     }
 }

@@ -4,7 +4,7 @@ import dto.AccountUpdateResult;
 import dto.UpdateResult;
 
 public class SavingAccount extends BankAccount {
-    private double interestRate;
+    private final double interestRate;
 
     public SavingAccount(long initialBalance, String bankName, String accountNumber, double interestRate) {
         super(initialBalance, bankName, accountNumber);
@@ -13,9 +13,10 @@ public class SavingAccount extends BankAccount {
 
     @Override
     public UpdateResult updateValue() {
-        long interest = (long) (balance * interestRate / 12);
-        balance += interest;
-        return new AccountUpdateResult(this.bankName, interest, this.balance);
+        long interest = (long) (getBalance() * interestRate / 12);
+		deposit(interest);
+
+        return new AccountUpdateResult(this.bankName, interest, getBalance());
     }
 
     @Override
