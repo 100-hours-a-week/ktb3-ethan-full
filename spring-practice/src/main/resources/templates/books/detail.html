@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="<http://www.thymeleaf.org>">
+<head>
+    <meta charset="UTF-8">
+    <title>도서 정보</title>
+</head>
+<body>
+    <div>
+        <h1 th:text="${book.title}"></h1>
+        <br>
+        <ul>
+            <li>저자: <span th:text="${book.author}"></span></li>
+            <li>ISBN: <span th:text="${book.isbn}"></span></li>
+            <li>설명: <span th:text="${book.description}"></span></li>
+        </ul>
+        <a href="/books"> 목록으로 돌아가기</a>
+    </div>
+</body>
+</html>

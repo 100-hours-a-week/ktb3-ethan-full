@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="<http://www.thymeleaf.org>">
+<head>
+    <meta charset="UTF-8">
+    <title>새 도서 등록</title>
+    <style>
+        form {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #submit-wrapper{
+            display: flex;
+            margin-top: 10px;
+        }
+        #submit-wrapper * {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form method="post" action="/books" th:object="${bookDto}">
+        제목: <input th:field="*{title}"/>
+        저자: <input th:field="*{author}"/>
+        ISBN: <input th:field="*{isbn}"/>
+        소개: <input th:field="*{description}" type="text"/>
+        <div id="submit-wrapper">
+            <button type="submit">저장</button>
+            <input type="button" value="취소" th:onclick="|location.href='@{/books}'|"/>
+        </div>
+    </form>
+</div>
+</body>
+</html>
