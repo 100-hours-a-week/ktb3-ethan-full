@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="<http://www.thymeleaf.org>">
+<head>
+    <meta charset="UTF-8">
+    <title>도서 목록</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>제목</th>
+            <th>저자</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="book : ${books}">
+            <td><a th:href="@{/books/{id}(id=${book.id})}" th:text="${book.id}"></a></td>
+            <td><span th:text="${book.title}"></span></td>
+            <td><span th:text="${book.author}"></span></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
