@@ -1,0 +1,4 @@
+[
+  {"id": 1, "user_id": 1, "title": "Hello World", "content": "First post", "image": null, "like_users": [2], "comments": [1, 2], "view_count": 10, "created_at": "2025-01-01T00:00:00"},
+  {"id": 2, "user_id": 2, "title": "Another Post", "content": "Content here", "image": null, "like_users": [], "comments": [], "view_count": 0, "created_at": "2025-01-02T00:00:00"}
+]
