@@ -1,7 +1,7 @@
 package org.restapi.springrestapi.repository.inmemory;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.restapi.springrestapi.model.Comment;
-import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -67,7 +66,7 @@ public class InMemoryCommentRepository implements CommentRepository {
 			allComments = allComments.subList(startIndex, endIndex);
 		}
 
-		allComments.sort(Collections.reverseOrder());
+		allComments.sort(Comparator.comparing(Comment::getId).reversed());
 		return allComments;
 	}
 

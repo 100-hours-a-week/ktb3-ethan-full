@@ -1,14 +1,12 @@
 package org.restapi.springrestapi.repository.inmemory;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Stream;
-
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
@@ -63,7 +61,7 @@ public class InMemeryPostRepository implements PostRepository {
 			allPosts = allPosts.subList(startIndex, endIndex);
 		}
 
-		allPosts.sort(Collections.reverseOrder());
+		allPosts.sort(Comparator.comparing(Post::getId).reversed());
 		return allPosts;
 	}
 
