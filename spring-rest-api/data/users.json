@@ -1,0 +1,5 @@
+[
+  {"id": 1, "email": "alice@example.com", "password": "dummyEncodedPassword{alice123!}", "nickname": "alice", "profile_image": null},
+  {"id": 2, "email": "bob@example.com", "password": "dummyEncodedPassword{bob123!}", "nickname": "bob", "profile_image": null},
+  {"id": 3, "email": "charlie@example.com", "password": "dummyEncodedPassword{charlie123!}", "nickname": "charlie", "profile_image": null}
+]
