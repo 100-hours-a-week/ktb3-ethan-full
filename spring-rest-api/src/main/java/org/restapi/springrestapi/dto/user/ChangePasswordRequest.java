@@ -3,13 +3,13 @@ package org.restapi.springrestapi.dto.user;
 import org.restapi.springrestapi.common.annotation.ValidPassword;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
 
-@Getter
-public class ChangePasswordRequest {
+public record ChangePasswordRequest (
 	@ValidPassword
-	private String password;
+	String password,
 
-	@NotBlank(message = "password_is_requireed")
-	private String confirmPassword;
+	@NotBlank(message = "password_is_required")
+    String confirmPassword
+){
+
 }

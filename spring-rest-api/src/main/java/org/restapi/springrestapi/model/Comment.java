@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import org.restapi.springrestapi.dto.comment.RegisterCommentRequest;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -22,12 +21,8 @@ public class Comment {
 			.userId(userId)
 			.postId(postId)
 			.content(command.content())
+			.createdAt(LocalDateTime.now())
 			.build();
-	}
-
-	@PostConstruct
-	public void init() {
-		this.createdAt = LocalDateTime.now();
 	}
 
 	public void updateContent(String newContent) {

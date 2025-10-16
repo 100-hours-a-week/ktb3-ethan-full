@@ -54,7 +54,7 @@ public class CommentController {
 	public ResponseEntity<ApiResponse<CommentResult>> patchComment(
 		@PathVariable Long postId,
 		@PathVariable Long id,
-		@Valid PatchCommentRequest request
+		@Valid @RequestBody PatchCommentRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()

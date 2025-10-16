@@ -6,7 +6,9 @@ import java.util.List;
 import org.restapi.springrestapi.model.Post;
 
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class PostResult {
 	private Long id;
@@ -27,8 +29,8 @@ public class PostResult {
 			.userId(post.getUserId())
 			.title(post.getTitle())
 			.content(post.getContent())
-			.likeCount(post.getLikeUsers().size())
-			.commentCount(post.getComments().size())
+			.likeCount(post.getLikeUsers() != null ? post.getLikeUsers().size() : 0)
+			.commentCount(post.getComments() != null ? post.getComments().size() : 0)
 			.viewCount(post.getViewCount())
 			.createdAt(post.getCreatedAt())
 			.commentIds(post.getComments())

@@ -70,11 +70,9 @@ public class PostServiceImpl implements PostService {
 
 		List<Long> likeUsers = post.getLikeUsers();
 		boolean wasLikeUser = false;
-		for (Long likeUserId : likeUsers) {
-			if (likeUserId.equals(userId)) {
-				likeUsers.remove(likeUserId);
-				wasLikeUser = true;
-			}
+		if (likeUsers != null && likeUsers.contains(userId)) {
+			likeUsers.remove(userId);
+			wasLikeUser = true;
 		}
 		if (!wasLikeUser) {
 			likeUsers.add(userId);
