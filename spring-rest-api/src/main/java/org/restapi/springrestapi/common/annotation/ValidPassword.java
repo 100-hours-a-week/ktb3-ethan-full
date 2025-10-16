@@ -17,7 +17,7 @@ import jakarta.validation.constraints.Size;
 @NotBlank(message = "password_is_required")
 @Size(min = 8, max = 20, message = "invalid_password_length")
 @Pattern(
-	regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]",
+	regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
 	message = "invalid_password_format"
 )
 public @interface ValidPassword {

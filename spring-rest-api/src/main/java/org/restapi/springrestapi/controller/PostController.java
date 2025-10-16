@@ -1,11 +1,8 @@
 package org.restapi.springrestapi.controller;
 
-import java.util.List;
-
 import org.restapi.springrestapi.common.ApiResponse;
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
-import org.restapi.springrestapi.dto.post.PatchPostResult;
 import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
@@ -63,10 +60,10 @@ public class PostController {
 			.body(ApiResponse.ok(SuccessCode.GET_SUCCESS, postService.getPost(userId, id)));
 	}
 
-	@PostMapping("/{id}")
+	@PatchMapping("/{id}")
 	public ResponseEntity<ApiResponse<PostResult>> patchPost(
 		@PathVariable Long id,
-		@Valid PatchPostRequest request
+		@Valid @RequestBody PatchPostRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()

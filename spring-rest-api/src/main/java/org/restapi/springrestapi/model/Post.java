@@ -1,14 +1,11 @@
 package org.restapi.springrestapi.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,8 +18,8 @@ public class Post {
 	private String content;
 	private String image; // nullable
 
-	private List<Long> likeUsers = new ArrayList<>();
-	private List<Long> comments  = new ArrayList<>();
+	private List<Long> likeUsers;
+	private List<Long> comments;
 	private int viewCount;
 
 	LocalDateTime createdAt;
@@ -30,9 +27,10 @@ public class Post {
 	public static Post from(Long userId, RegisterPostRequest command) {
 		return Post.builder()
 			.userId(userId)
-			.title(command.getTitle())
-			.content(command.getContent())
-			.image(command.getPostImage())
+			.title(command.title())
+			.content(command.content())
+			.image(command.image())
+			.createdAt(LocalDateTime.now())
 			.build();
 	}
 	public static Post from(PatchPostRequest command, Post prevPost) {
@@ -41,10 +39,5 @@ public class Post {
 			.content(command.content())
 			.image(command.image())
 			.build();
-	}
-
-	@PostConstruct
-	public void init() {
-		this.createdAt = LocalDateTime.now();
 	}
 }

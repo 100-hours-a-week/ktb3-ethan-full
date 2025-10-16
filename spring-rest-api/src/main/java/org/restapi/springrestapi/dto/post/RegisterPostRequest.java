@@ -3,15 +3,15 @@ package org.restapi.springrestapi.dto.post;
 import org.restapi.springrestapi.common.annotation.ValidPostTitle;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
 
-@Getter
-public class RegisterPostRequest {
+public record RegisterPostRequest (
 	@ValidPostTitle
-	private String title;
+	String title,
 
 	@NotBlank
-	private String content;
+	String content,
 
-	private String postImage; // nullable
+	String image // nullable
+){
+
 }

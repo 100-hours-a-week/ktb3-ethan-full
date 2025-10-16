@@ -18,13 +18,15 @@ public record PostSimpleResult(
 	LocalDateTime createAt
 ) {
 	public static PostSimpleResult from(Post post) {
+
 		return PostSimpleResult.builder()
 			.id(post.getId())
 			.userId(post.getUserId())
 			.title(post.getTitle())
-			.likeCount(post.getLikeUsers().size())
-			.commentCount(post.getComments().size())
+			.likeCount(post.getLikeUsers() != null ? post.getLikeUsers().size() : 0)
+			.commentCount(post.getComments() != null ? post.getComments().size() : 0)
 			.viewCount(post.getViewCount())
+			.createAt(post.getCreatedAt())
 			.build();
 	}
 }
