@@ -8,11 +8,7 @@ import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 import org.restapi.springrestapi.dto.post.PostSimpleResult;
-import org.restapi.springrestapi.exception.AppException;
-import org.restapi.springrestapi.exception.code.PostErrorCode;
-import org.restapi.springrestapi.exception.code.UserErrorCode;
 import org.restapi.springrestapi.finder.PostFinder;
-import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -24,11 +20,11 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final PostFinder postFinder;
-	private final UserFinder userFinder;
+	private final PostValidator postValidator;
 
 	@Override
 	public PostSimpleResult registerPost(Long userId, RegisterPostRequest command) {
-		validateAuthorId(userId);
+		postValidator.validateAuthorId(userId);
 
 		Post post = Post.from(userId, command);
 
@@ -56,7 +52,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PostResult updatePost(Long userId, Long id, PatchPostRequest command) {
 		Post post = postFinder.findById(id);
-		validateAuthorInfo(userId, id);
+		postValidator.validateAuthorInfo(userId, id);
 
 		Post saved = Post.from(command, post);
 
@@ -66,7 +62,7 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public PatchPostLikeResult updatePostLike(Long userId, Long postId) {
 		Post post = postFinder.findById(postId);
-		validateAuthorId(userId);
+		postValidator.validateAuthorId(userId);
 
 		List<Long> likeUsers = post.getLikeUsers();
 		boolean wasLikeUser = false;
@@ -83,22 +79,8 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public void deletePost(Long userId, Long postId) {
-		validateAuthorInfo(userId, postId);
+		postValidator.validateAuthorInfo(userId, postId);
 		postRepository.deleteById(postId);
 	}
 
-	private void validateAuthorId(Long userId) {
-		if (userFinder.findById(userId) == null) {
-			throw new AppException(UserErrorCode.USER_NOT_FOUND);
-		}
-	}
-	private void validateAuthorForbidden(Long userId, Long postId) {
-		if (!postRepository.existsByIdAndUserId(postId, userId)) {
-			throw new AppException(PostErrorCode.PERMISSION_DENIED);
-		}
-	}
-	private void validateAuthorInfo(Long userId, Long postId) {
-		validateAuthorId(userId);
-		validateAuthorForbidden(userId, postId);
-	}
 }
