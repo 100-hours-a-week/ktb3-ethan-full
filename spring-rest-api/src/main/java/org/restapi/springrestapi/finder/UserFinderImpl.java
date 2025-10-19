@@ -18,4 +18,19 @@ public class UserFinderImpl implements UserFinder {
 		return userRepository.findById(id)
 			.orElseThrow(() -> new AppException(UserErrorCode.USER_NOT_FOUND));
 	}
+
+	@Override
+	public boolean existsById(Long id) {
+		return userRepository.findById(id).isPresent();
+	}
+
+	@Override
+	public boolean existsByEmail(String email) {
+		return userRepository.existsByEmail(email);
+	}
+
+	@Override
+	public boolean existsByNickName(String nickName) {
+		return userRepository.existsByNickName(nickName);
+	}
 }

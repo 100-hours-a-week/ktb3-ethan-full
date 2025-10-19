@@ -1,6 +1,6 @@
 package org.restapi.springrestapi.controller;
 
-import org.restapi.springrestapi.common.ApiResponse;
+import org.restapi.springrestapi.common.APIResponse;
 import org.restapi.springrestapi.dto.comment.CommentListResult;
 import org.restapi.springrestapi.dto.comment.CommentResult;
 import org.restapi.springrestapi.dto.comment.PatchCommentRequest;
@@ -31,34 +31,34 @@ public class CommentController {
 	private final AuthContext authContext;
 
 	@PostMapping("/{postId}/comments")
-	public ResponseEntity<ApiResponse<CommentResult>> createComment(
+	public ResponseEntity<APIResponse<CommentResult>> createComment(
 		@PathVariable Long postId,
 		@RequestBody RegisterCommentRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(ApiResponse.ok(SuccessCode.REGISTER_SUCCESS, commentService.registerComment(userId, request, postId)));
+			.body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, commentService.registerComment(userId, request, postId)));
 	}
 
 	@GetMapping("/{postId}/comments")
-	public ResponseEntity<ApiResponse<CommentListResult>> getCommentAll(
+	public ResponseEntity<APIResponse<CommentListResult>> getCommentAll(
 		@PathVariable Long postId,
 		@RequestParam(defaultValue = "0") int cursor,
 		@RequestParam(defaultValue = "10") int limit
 	) {
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.GET_SUCCESS, commentService.getCommentList(postId, cursor, limit)));
+			.body(APIResponse.ok(SuccessCode.GET_SUCCESS, commentService.getCommentList(postId, cursor, limit)));
 	}
 
 	@PatchMapping("/{postId}/comments/{id}")
-	public ResponseEntity<ApiResponse<CommentResult>> patchComment(
+	public ResponseEntity<APIResponse<CommentResult>> patchComment(
 		@PathVariable Long postId,
 		@PathVariable Long id,
 		@Valid @RequestBody PatchCommentRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.PATCH_SUCCESS, commentService.updateComment(userId, request, postId, id)));
+			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, commentService.updateComment(userId, request, postId, id)));
 	}
 
 	@DeleteMapping("/{postId}/comments/{id}")

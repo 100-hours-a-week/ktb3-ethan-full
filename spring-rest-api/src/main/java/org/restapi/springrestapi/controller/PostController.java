@@ -1,6 +1,6 @@
 package org.restapi.springrestapi.controller;
 
-import org.restapi.springrestapi.common.ApiResponse;
+import org.restapi.springrestapi.common.APIResponse;
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.PostListResult;
@@ -33,54 +33,54 @@ public class PostController {
 
 
 	@PostMapping
-	public ResponseEntity<ApiResponse<PostSimpleResult>> registerPost(
+	public ResponseEntity<APIResponse<PostSimpleResult>> registerPost(
 		@Valid @RequestBody RegisterPostRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 
 		return ResponseEntity.status(SuccessCode.REGISTER_SUCCESS.getStatus())
-			.body(ApiResponse.ok(SuccessCode.REGISTER_SUCCESS, postService.registerPost(userId, request)));
+			.body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, postService.registerPost(userId, request)));
 	}
 
 	@GetMapping
-	public ResponseEntity<ApiResponse<PostListResult>> getPostList(
+	public ResponseEntity<APIResponse<PostListResult>> getPostList(
 		@RequestParam(defaultValue = "0") int cursor,
 		@RequestParam(defaultValue = "10") int limit
 	) {
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.GET_SUCCESS, postService.getPostList(cursor, limit)));
+			.body(APIResponse.ok(SuccessCode.GET_SUCCESS, postService.getPostList(cursor, limit)));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostResult>> getPostDetail(
+	public ResponseEntity<APIResponse<PostResult>> getPostDetail(
 		@PathVariable Long id
 	) {
 		final Long userId = authContext.currentUserIdOrNull();
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.GET_SUCCESS, postService.getPost(userId, id)));
+			.body(APIResponse.ok(SuccessCode.GET_SUCCESS, postService.getPost(userId, id)));
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<ApiResponse<PostResult>> patchPost(
+	public ResponseEntity<APIResponse<PostResult>> patchPost(
 		@PathVariable Long id,
 		@Valid @RequestBody PatchPostRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePost(userId, id, request)));
+			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePost(userId, id, request)));
 	}
 
 	@PatchMapping("/{id}/like")
-	public ResponseEntity<ApiResponse<PatchPostLikeResult>> updatePostLike(
+	public ResponseEntity<APIResponse<PatchPostLikeResult>> updatePostLike(
 		@PathVariable Long id
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()
-			.body(ApiResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePostLike(userId, id)));
+			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePostLike(userId, id)));
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse<Void>> deletePost(
+	public ResponseEntity<APIResponse<Void>> deletePost(
 		@PathVariable Long id
 	) {
 		final Long userId = authContext.requiredUserId();

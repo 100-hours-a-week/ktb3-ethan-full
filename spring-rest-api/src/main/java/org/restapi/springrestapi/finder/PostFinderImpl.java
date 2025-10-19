@@ -26,4 +26,14 @@ public class PostFinderImpl implements PostFinder {
 	public List<PostSimpleResult> findAll(int cursor, int limit) {
 		return postRepository.findAll(cursor, limit).stream().map(PostSimpleResult::from).toList();
 	}
+
+	@Override
+	public boolean existsById(Long id) {
+		return postRepository.findById(id).isPresent();
+	}
+
+	@Override
+	public boolean existsByIdAndUserId(Long postId, Long userId) {
+		return postRepository.existsByIdAndUserId(postId, userId);
+	}
 }

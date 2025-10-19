@@ -3,7 +3,6 @@ package org.restapi.springrestapi.finder;
 import java.util.List;
 
 import org.restapi.springrestapi.dto.comment.CommentResult;
-import org.restapi.springrestapi.dto.post.PostSimpleResult;
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.CommentErrorCode;
 import org.restapi.springrestapi.model.Comment;
@@ -26,5 +25,10 @@ public class CommentFinderImpl implements CommentFinder {
 	@Override
 	public List<CommentResult> findAll(Long postId, int cursor, int limit) {
 		return commentRepository.findAll(postId, cursor, limit).stream().map(CommentResult::from).toList();
+	}
+
+	@Override
+	public boolean existsById(Long id) {
+		return commentRepository.findById(id).isPresent();
 	}
 }

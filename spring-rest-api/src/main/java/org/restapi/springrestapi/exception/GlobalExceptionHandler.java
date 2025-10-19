@@ -3,7 +3,7 @@ package org.restapi.springrestapi.exception;
 import java.util.Map;
 
 import org.restapi.springrestapi.exception.code.ErrorCode;
-import org.restapi.springrestapi.common.ApiResponse;
+import org.restapi.springrestapi.common.APIResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,10 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ApiResponse<Map<String, Object>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+	public ResponseEntity<APIResponse<Map<String, Object>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
 		log.warn("Validation failed: {}", e.getMessage(), e);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(ApiResponse.error(
+			.body(APIResponse.error(
 				e.getBindingResult()
 					.getAllErrors()
 					.get(0)
@@ -28,17 +28,17 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(AppException.class)
-	public ResponseEntity<ApiResponse<Map<String, Object>>> handleAppException(AppException e) {
+	public ResponseEntity<APIResponse<Map<String, Object>>> handleAppException(AppException e) {
 		final ErrorCode code = e.getErrorCode();
 		log.error("AppException: status={}, code={}, message={}", code.getStatus(), String.valueOf(code), code.getMessage(), e);
 		return ResponseEntity.status(code.getStatus())
-			.body(ApiResponse.error(code.getMessage()));
+			.body(APIResponse.error(code.getMessage()));
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ApiResponse<Map<String, Object>>> handleAnyException(Exception e) {
+	public ResponseEntity<APIResponse<Map<String, Object>>> handleAnyException(Exception e) {
 		log.error("Unhandled exception", e);
 		return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(ApiResponse.error("internal_server_error"));
+			.body(APIResponse.error("internal_server_error"));
 	}
 }

@@ -9,4 +9,20 @@ public interface UserFinder {
 	 * @return 조회된 사용자 엔티티를 반환합니다.
 	 */
 	User findById(Long id);
+
+	/**
+	 * 사용자의 존재 여부만 확인합니다.
+	 * 엔티티 로딩 없이 boolean으로 반환합니다.
+	 */
+	boolean existsById(Long id);
+
+	/**
+	 * 이메일 중복 여부를 확인합니다.
+	 */
+	boolean existsByEmail(String email);
+
+	/**
+	 * 닉네임 중복 여부를 확인합니다.
+	 */
+	boolean existsByNickName(String nickName);
 }
