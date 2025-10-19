@@ -12,14 +12,25 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Upload", description = "파일 업로드 API")
 public class UploadController {
 	private final AuthContext auth;
 	private final FileStorageService fileStorageService;
 
+	@Operation(summary = "이미지 업로드", description = "로그인 사용자의 이미지를 업로드하고 URL을 반환합니다.")
+	@ApiResponses({
+		@ApiResponse(responseCode = "201", description = "업로드 성공"),
+		@ApiResponse(responseCode = "401", description = "인증 필요"),
+		@ApiResponse(responseCode = "400", description = "잘못된 파일 형식 또는 요청")
+	})
 	@PostMapping(
 		value = "/upload/image",
 		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
