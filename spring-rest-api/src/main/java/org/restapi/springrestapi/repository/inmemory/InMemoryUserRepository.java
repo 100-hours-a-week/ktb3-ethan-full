@@ -1,10 +1,14 @@
 package org.restapi.springrestapi.repository.inmemory;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.restapi.springrestapi.model.User;
 import org.restapi.springrestapi.repository.UserRepository;
@@ -18,6 +22,8 @@ import jakarta.annotation.PostConstruct;
 public class InMemoryUserRepository implements UserRepository {
 	private final SeedLoader seedLoader;
 	private final Map<Long, User> db = new LinkedHashMap<>();
+	private final Map<String, Long> emailToUserMap = new ConcurrentHashMap<>();
+	private final Map<String, Long> nicknameToUserMap = new ConcurrentHashMap<>();
 	private final AtomicLong seq = new AtomicLong(0);
 
 	@Autowired
@@ -28,7 +34,11 @@ public class InMemoryUserRepository implements UserRepository {
 	@PostConstruct
 	void init() {
 		List<User> list = seedLoader.load("users", User.class);
-		list.forEach(u -> db.put(u.getId(), u));
+		list.forEach(u -> {
+			db.put(u.getId(), u);
+			emailToUserMap.put(u.getEmail(), u.getId());
+			nicknameToUserMap.put(u.getNickname(), u.getId());
+		});
 		seq.set(
 			db.keySet().stream().mapToLong(Long::longValue)
 				.max().orElse(0L) + 1
@@ -38,10 +48,21 @@ public class InMemoryUserRepository implements UserRepository {
 	@Override
 	public User save(User user) {
 		final Long id = (user.getId() == null ? seq.getAndIncrement() : user.getId());
+		
+		if (user.getId() != null) {
+			User prev = db.get(user.getId());
+			if (prev != null) {
+				emailToUserMap.remove(prev.getEmail());
+				nicknameToUserMap.remove(prev.getNickname());
+			}
+		}
+
 		User saved = user.toBuilder()
 			.id(id)
 			.build();
 		db.put(id, saved);
+		emailToUserMap.put(saved.getEmail(), saved.getId());
+		nicknameToUserMap.put(saved.getNickname(), saved.getId());
 		return saved;
 	}
 
@@ -52,23 +73,35 @@ public class InMemoryUserRepository implements UserRepository {
 
 	@Override
 	public Optional<User> findByEmail(String email) {
-		return db.values().stream().filter(u -> u.getEmail().equals(email)).findFirst();
+		return this.findById(emailToUserMap.get(email));
 	}
 
 	@Override
 	public boolean existsByEmail(String email) {
-		return db.values().stream()
-			.anyMatch(u -> u.getEmail().equals(email));
+		return emailToUserMap.containsKey(email);
 	}
 
 	@Override
 	public boolean existsByNickName(String nickName) {
-		return db.values().stream()
-			.anyMatch(u -> u.getNickname().equals(nickName));
+		return nicknameToUserMap.containsKey(nickName);
 	}
 
 	@Override
 	public void deleteById(Long id) {
+		User user = db.get(id);
+		if (user != null) {
+			emailToUserMap.remove(user.getEmail());
+			nicknameToUserMap.remove(user.getNickname());
+		}
 		db.remove(id);
+	}
+
+	@Override
+	public List<String> findAllByIdIn(Collection<Long> ids) {
+		return ids.stream()
+				.map(db::get)
+				.filter(Objects::nonNull)
+                .map(User::getNickname)
+				.collect(Collectors.toList());
 	}
 }

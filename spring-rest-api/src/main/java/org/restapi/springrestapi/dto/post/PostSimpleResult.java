@@ -7,26 +7,34 @@ import org.restapi.springrestapi.model.Post;
 import lombok.Builder;
 
 
-@Builder
+@Builder(toBuilder = true)
 public record PostSimpleResult(
 	Long id,
 	Long userId,
+    String authorNickname,
 	String title,
 	int likeCount,
 	int commentCount,
 	int viewCount,
 	LocalDateTime createAt
 ) {
-	public static PostSimpleResult from(Post post) {
+    public static PostSimpleResult from(Post post) {
+        return base(post).build();
+    }
 
-		return PostSimpleResult.builder()
-			.id(post.getId())
-			.userId(post.getUserId())
-			.title(post.getTitle())
-			.likeCount(post.getLikeUsers() != null ? post.getLikeUsers().size() : 0)
-			.commentCount(post.getComments() != null ? post.getComments().size() : 0)
-			.viewCount(post.getViewCount())
-			.createAt(post.getCreatedAt())
-			.build();
-	}
+    public static PostSimpleResult from(PostSimpleResult post, String nickname) {
+        return post.toBuilder().authorNickname(nickname).build();
+    }
+
+    private static PostSimpleResultBuilder base(Post post) {
+        return PostSimpleResult.builder()
+                .id(post.getId())
+                .userId(post.getUserId())
+                .title(post.getTitle())
+                .likeCount(post.getLikeUsers().size())
+                .commentCount(post.getComments().size())
+                .viewCount(post.getViewCount())
+                .createAt(post.getCreatedAt());
+    }
+
 }

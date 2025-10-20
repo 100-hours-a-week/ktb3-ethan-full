@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class UserFinderImpl implements UserFinder {
@@ -33,4 +38,15 @@ public class UserFinderImpl implements UserFinder {
 	public boolean existsByNickName(String nickName) {
 		return userRepository.existsByNickName(nickName);
 	}
+
+    @Override
+    public Map<Long, String> findNicknamesByIds(Collection<Long> ids) {
+        return userRepository.findAllByIdIn(ids).stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(
+                        User::getId,
+                        User::getNickname
+                )).toMap();
+
+    }
 }

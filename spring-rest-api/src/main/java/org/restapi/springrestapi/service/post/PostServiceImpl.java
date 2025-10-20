@@ -1,6 +1,9 @@
 package org.restapi.springrestapi.service.post;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
@@ -9,6 +12,7 @@ import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 import org.restapi.springrestapi.dto.post.PostSimpleResult;
 import org.restapi.springrestapi.finder.PostFinder;
+import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +24,8 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final PostFinder postFinder;
-	private final PostValidator postValidator;
+    private final UserFinder userFinder;
+    private final PostValidator postValidator;
 
 	@Override
 	public PostSimpleResult registerPost(Long userId, RegisterPostRequest command) {
@@ -31,11 +36,37 @@ public class PostServiceImpl implements PostService {
 		return PostSimpleResult.from(postRepository.save(post));
 	}
 
-	@Override
-	public PostListResult getPostList(int cursor, int limit) {
-		List<PostSimpleResult> postList = postFinder.findAll(cursor, limit);
-		return PostListResult.from(postList, (int)Math.max(postList.get(0).id() - 1, 0));
-	}
+    @Override
+    public PostListResult getPostList(int cursor, int limit) {
+        List<PostSimpleResult> posts = postFinder.findAll(cursor, limit);
+        if (posts.isEmpty()) {
+            return PostListResult.from(List.of(), cursor);
+        }
+
+        Set<Long> userIds = posts.stream()
+                .map(PostSimpleResult::userId)
+                .collect(Collectors.toSet());
+
+        Map<Long, String> nicknameByUserId = userFinder.findNicknamesByIds(userIds);
+
+        List<PostSimpleResult> enriched = posts.stream()
+                .map(p -> PostSimpleResult.from(
+                        p,
+                        nicknameByUserId.getOrDefault(p.userId(), "(unknown)") // 방어
+                ))
+                .toList();
+
+        int nextCursor = calcNextCursor(enriched);
+
+        return PostListResult.from(enriched, nextCursor);
+    }
+
+    private int calcNextCursor(List<PostSimpleResult> posts) {
+        // 정렬 규칙에 맞게 조정하자.
+        // 예: id DESC 페이지라면 마지막 요소의 id - 1
+        long lastIdDesc = posts.get(posts.size() - 1).id();
+        return (int) Math.max(lastIdDesc - 1, 0);
+    }
 
 	@Override
 	public PostResult getPost(Long userId, Long id) {
