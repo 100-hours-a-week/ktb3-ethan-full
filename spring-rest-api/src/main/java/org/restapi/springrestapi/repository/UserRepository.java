@@ -1,7 +1,10 @@
 package org.restapi.springrestapi.repository;
 
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
 
 public interface UserRepository {
@@ -11,4 +14,5 @@ public interface UserRepository {
 	boolean existsByEmail(String email);
 	boolean existsByNickName(String nickName);
 	void deleteById(Long id);
+	Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> ids);
 }

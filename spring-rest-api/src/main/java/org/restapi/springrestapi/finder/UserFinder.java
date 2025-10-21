@@ -1,6 +1,10 @@
 package org.restapi.springrestapi.finder;
 
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
+
+import java.util.Collection;
+import java.util.Map;
 
 public interface UserFinder {
 	/**
@@ -25,4 +29,9 @@ public interface UserFinder {
 	 * 닉네임 중복 여부를 확인합니다.
 	 */
 	boolean existsByNickName(String nickName);
+
+    /**
+     * 여러 post id에 대해 user의 nickname을 한 번에 조회합니다.
+     */
+    Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> userIds);
 }

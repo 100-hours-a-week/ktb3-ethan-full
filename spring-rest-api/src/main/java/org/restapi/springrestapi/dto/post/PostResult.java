@@ -23,7 +23,7 @@ public class PostResult {
 	private List<Long> commentIds;
 	private String image;
 
-	public static PostResult from(Post post) {
+	public static PostResult from(Post post, boolean didLike) {
 		return PostResult.builder()
 			.id(post.getId())
 			.userId(post.getUserId())
@@ -35,11 +35,10 @@ public class PostResult {
 			.createdAt(post.getCreatedAt())
 			.commentIds(post.getComments())
 			.image(post.getImage())
+                .didLike(didLike)
 			.build();
 	}
-
-	public void markLike() {
-		this.didLike = true;
-	}
-
+    public static PostResult from(Post post) {
+        return PostResult.from(post, false);
+    }
 }

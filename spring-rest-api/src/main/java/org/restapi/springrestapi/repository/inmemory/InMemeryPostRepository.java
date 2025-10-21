@@ -1,12 +1,8 @@
 package org.restapi.springrestapi.repository.inmemory;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
@@ -19,6 +15,7 @@ import jakarta.annotation.PostConstruct;
 public class InMemeryPostRepository implements PostRepository {
 	private final SeedLoader seedLoader;
 	private final Map<Long, Post> db = new LinkedHashMap<>();
+    private final Map<Long, Long> userIdToPostMap = new LinkedHashMap<>();
 	private final AtomicLong seq = new AtomicLong(0);
 
 	@Autowired
@@ -29,7 +26,10 @@ public class InMemeryPostRepository implements PostRepository {
 	@PostConstruct
 	void init() {
 		List<Post> list = seedLoader.load("posts", Post.class);
-		list.forEach(p -> db.put(p.getId(), p));
+		list.forEach(p -> {
+            db.put(p.getId(), p);
+            userIdToPostMap.put(p.getUserId(), p.getId());
+        });
 		seq.set(
 			db.keySet().stream().mapToLong(Long::longValue)
 				.max().orElse(0L) + 1
@@ -42,6 +42,7 @@ public class InMemeryPostRepository implements PostRepository {
 			.id(id)
 			.build();
 		db.put(id, saved);
+        userIdToPostMap.put(saved.getUserId(), id);
 		return saved;
 	}
 
@@ -52,26 +53,24 @@ public class InMemeryPostRepository implements PostRepository {
 
 	@Override
 	public List<Post> findAll(int cursor, int limit) {
-		final long SIZE = seq.get();
-		List<Post> allPosts = new ArrayList<>(db.values());
+		List<Post> posts = new ArrayList<>(db.values());
+        Collections.reverse(posts);
 
-		if (SIZE >= cursor + limit) {
-			final int endIndex = Math.toIntExact(SIZE - cursor < 0 ? 0 : SIZE - cursor);
-			final int startIndex = Math.max(endIndex - limit, 0);
-			allPosts = allPosts.subList(startIndex, endIndex);
-		}
-
-		allPosts.sort(Comparator.comparing(Post::getId).reversed());
-		return allPosts;
+        return posts.stream()
+            .skip(cursor)
+            .limit(limit)
+            .collect(Collectors.toList());
 	}
 
 	@Override
 	public boolean existsByIdAndUserId(Long id, Long userId) {
-		return db.values().stream().anyMatch(p -> p.getId().equals(id) && p.getUserId().equals(userId));
+        return userIdToPostMap.containsKey(userId) &&
+                userIdToPostMap.get(userId).equals(id);
 	}
 
 	@Override
 	public void deleteById(Long id) {
-		db.remove(id);
+        userIdToPostMap.remove(db.get(id).getUserId());
+        db.remove(id);
 	}
 }

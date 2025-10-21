@@ -1,6 +1,7 @@
 package org.restapi.springrestapi.service.post;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
@@ -8,7 +9,9 @@ import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 import org.restapi.springrestapi.dto.post.PostSimpleResult;
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.finder.PostFinder;
+import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class PostServiceImpl implements PostService {
 	private final PostRepository postRepository;
 	private final PostFinder postFinder;
-	private final PostValidator postValidator;
+    private final UserFinder userFinder;
+    private final PostValidator postValidator;
 
 	@Override
 	public PostSimpleResult registerPost(Long userId, RegisterPostRequest command) {
@@ -31,22 +35,47 @@ public class PostServiceImpl implements PostService {
 		return PostSimpleResult.from(postRepository.save(post));
 	}
 
-	@Override
-	public PostListResult getPostList(int cursor, int limit) {
-		List<PostSimpleResult> postList = postFinder.findAll(cursor, limit);
-		return PostListResult.from(postList, (int)Math.max(postList.get(0).id() - 1, 0));
-	}
+    @Override
+    public PostListResult getPostList(int cursor, int limit) {
+        // cursor 번째 최근 글 ~ limit 개의 글, 엣지케이스는 래포지토리 계층에서 처리.
+        List<PostSimpleResult> posts = postFinder.findAll(cursor, limit);
+        if (posts.isEmpty()) {
+            return PostListResult.from(List.of(), cursor);
+        }
+
+
+        List<Long> userIds = posts.stream()
+                .map(PostSimpleResult::userId)
+                .toList();
+        // 게시글 목록 조회시 가져올 사용자 간편 정보.
+        Map<Long, SimpleUserInfo> simpleUserInfoByUserId = userFinder.findSimpleInfoByIds(userIds);
+
+        // 반환할 최종 게시글 목록
+        posts = posts.stream()
+                .map(p -> PostSimpleResult.from(
+                        p,
+                        simpleUserInfoByUserId.getOrDefault(
+                                p.userId(),
+                                SimpleUserInfo.unknown())
+                )).toList();
+
+        int nextCursor = calcNextCursor(posts);
+
+        return PostListResult.from(posts, nextCursor);
+    }
+
+    private int calcNextCursor(List<PostSimpleResult> posts) {
+        long lastIdDesc = posts.get(posts.size() - 1).id();
+        return (int) Math.max(lastIdDesc - 1, 0);
+    }
 
 	@Override
 	public PostResult getPost(Long userId, Long id) {
 		Post post = postFinder.findById(id);
 
-		PostResult result = PostResult.from(post);
-		if (userId != null && post.getLikeUsers().stream().anyMatch(_id -> _id.equals(userId))) {
-			result.markLike();
-		}
+        final boolean didLike = userId != null && post.getLikeUsers().stream().anyMatch(_id -> _id.equals(userId));
 
-		return result;
+		return PostResult.from(post, didLike);
 	}
 
 	@Override
