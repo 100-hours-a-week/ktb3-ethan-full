@@ -2,8 +2,6 @@ package org.restapi.springrestapi.service.post;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
@@ -11,6 +9,7 @@ import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 import org.restapi.springrestapi.dto.post.PostSimpleResult;
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.finder.PostFinder;
 import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Post;
@@ -38,32 +37,34 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostListResult getPostList(int cursor, int limit) {
+        // cursor 번째 최근 글 ~ limit 개의 글, 엣지케이스는 래포지토리 계층에서 처리.
         List<PostSimpleResult> posts = postFinder.findAll(cursor, limit);
         if (posts.isEmpty()) {
             return PostListResult.from(List.of(), cursor);
         }
 
-        Set<Long> userIds = posts.stream()
+
+        List<Long> userIds = posts.stream()
                 .map(PostSimpleResult::userId)
-                .collect(Collectors.toSet());
+                .toList();
+        // 게시글 목록 조회시 가져올 사용자 간편 정보.
+        Map<Long, SimpleUserInfo> simpleUserInfoByUserId = userFinder.findSimpleInfoByIds(userIds);
 
-        Map<Long, String> nicknameByUserId = userFinder.findNicknamesByIds(userIds);
-
-        List<PostSimpleResult> enriched = posts.stream()
+        // 반환할 최종 게시글 목록
+        posts = posts.stream()
                 .map(p -> PostSimpleResult.from(
                         p,
-                        nicknameByUserId.getOrDefault(p.userId(), "(unknown)") // 방어
-                ))
-                .toList();
+                        simpleUserInfoByUserId.getOrDefault(
+                                p.userId(),
+                                SimpleUserInfo.unknown())
+                )).toList();
 
-        int nextCursor = calcNextCursor(enriched);
+        int nextCursor = calcNextCursor(posts);
 
-        return PostListResult.from(enriched, nextCursor);
+        return PostListResult.from(posts, nextCursor);
     }
 
     private int calcNextCursor(List<PostSimpleResult> posts) {
-        // 정렬 규칙에 맞게 조정하자.
-        // 예: id DESC 페이지라면 마지막 요소의 id - 1
         long lastIdDesc = posts.get(posts.size() - 1).id();
         return (int) Math.max(lastIdDesc - 1, 0);
     }
@@ -72,12 +73,9 @@ public class PostServiceImpl implements PostService {
 	public PostResult getPost(Long userId, Long id) {
 		Post post = postFinder.findById(id);
 
-		PostResult result = PostResult.from(post);
-		if (userId != null && post.getLikeUsers().stream().anyMatch(_id -> _id.equals(userId))) {
-			result.markLike();
-		}
+        final boolean didLike = userId != null && post.getLikeUsers().stream().anyMatch(_id -> _id.equals(userId));
 
-		return result;
+		return PostResult.from(post, didLike);
 	}
 
 	@Override

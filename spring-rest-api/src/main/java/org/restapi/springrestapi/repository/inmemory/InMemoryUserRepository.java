@@ -1,15 +1,11 @@
 package org.restapi.springrestapi.repository.inmemory;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
 import org.restapi.springrestapi.repository.UserRepository;
 import org.restapi.springrestapi.common.util.SeedLoader;
@@ -96,12 +92,15 @@ public class InMemoryUserRepository implements UserRepository {
 		db.remove(id);
 	}
 
-	@Override
-	public List<String> findAllByIdIn(Collection<Long> ids) {
-		return ids.stream()
-				.map(db::get)
-				.filter(Objects::nonNull)
-                .map(User::getNickname)
-				.collect(Collectors.toList());
-	}
+    @Override
+    public Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> ids) {
+        return new HashSet<>(ids).stream()
+                .map(db::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(
+                        User::getId,
+                        u -> new SimpleUserInfo(u.getNickname())
+                ));
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.restapi.springrestapi.finder;
 
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
 
 import java.util.Collection;
@@ -32,5 +33,5 @@ public interface UserFinder {
     /**
      * 여러 post id에 대해 user의 nickname을 한 번에 조회합니다.
      */
-    Map<Long, String> findNicknamesByIds(Collection<Long> postIds);
+    Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> userIds);
 }

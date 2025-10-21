@@ -2,6 +2,7 @@ package org.restapi.springrestapi.dto.post;
 
 import java.time.LocalDateTime;
 
+import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.Post;
 
 import lombok.Builder;
@@ -22,8 +23,8 @@ public record PostSimpleResult(
         return base(post).build();
     }
 
-    public static PostSimpleResult from(PostSimpleResult post, String nickname) {
-        return post.toBuilder().authorNickname(nickname).build();
+    public static PostSimpleResult from(PostSimpleResult post, SimpleUserInfo userInfo) {
+        return post.toBuilder().authorNickname(userInfo.nickname()).build();
     }
 
     private static PostSimpleResultBuilder base(Post post) {
