@@ -1,6 +1,11 @@
+# ERD
+
+![ERD](https://github.com/100-hours-a-week/ktb3-ethan-full/edit/main/spring-rest-api/erd.png)
+
+
 # SOLID 원칙 기반 리팩토링(SRP + DIP)
 
-이 문서는 SOLID 원칙 기반 리팩토링의 방향과 성과를 정리합니다.
+이 섹션은 SOLID 원칙 기반 리팩토링의 방향과 성과를 정리합니다.
 
 - 대상: `UserServiceImpl`, `PostServiceImpl`, `CommentServiceImpl`
 - 선정 이유:
