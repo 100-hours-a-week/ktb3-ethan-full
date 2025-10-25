@@ -1,6 +1,6 @@
 # ERD
 
-![ERD](https://github.com/100-hours-a-week/ktb3-ethan-full/edit/main/spring-rest-api/erd.png)
+![ERD](https://github.com/100-hours-a-week/ktb3-ethan-full/blob/main/spring-rest-api/erd.png)
 
 
 # SOLID 원칙 기반 리팩토링(SRP + DIP)
