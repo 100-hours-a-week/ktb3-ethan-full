@@ -7,7 +7,7 @@ import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.AuthErrorCode;
 import org.restapi.springrestapi.model.User;
 
-import org.restapi.springrestapi.repository.UserRepository;
+import org.restapi.springrestapi.legacy.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.restapi.springrestapi.repository.inmemory;
+package org.restapi.springrestapi.legacy.repository.inmemory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.restapi.springrestapi.model.Comment;
-import org.restapi.springrestapi.repository.CommentRepository;
+import org.restapi.springrestapi.legacy.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

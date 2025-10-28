@@ -3,17 +3,23 @@ package org.restapi.springrestapi.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 
 import lombok.Builder;
 import lombok.Getter;
 
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Builder(toBuilder = true)
 public class Post {
-	private final Long id;
-	private final Long userId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	private String title;
 	private String content;
 	private String image; // nullable
@@ -24,9 +30,14 @@ public class Post {
 
 	LocalDateTime createdAt;
 
-	public static Post from(Long userId, RegisterPostRequest command) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User author;
+
+
+    public static Post from(User author, RegisterPostRequest command) {
 		return Post.builder()
-			.userId(userId)
+			.author(author)
 			.title(command.title())
 			.content(command.content())
 			.image(command.image())
@@ -40,4 +51,12 @@ public class Post {
 			.image(command.image())
 			.build();
 	}
+
+    protected void changeAuthor(User author) {
+        this.author = author;
+        if (author != null) {
+            author.getPosts().remove(this);
+        }
+
+    }
 }

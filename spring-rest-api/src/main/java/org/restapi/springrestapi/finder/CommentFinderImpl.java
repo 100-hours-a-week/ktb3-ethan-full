@@ -6,7 +6,7 @@ import org.restapi.springrestapi.dto.comment.CommentResult;
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.CommentErrorCode;
 import org.restapi.springrestapi.model.Comment;
-import org.restapi.springrestapi.repository.CommentRepository;
+import org.restapi.springrestapi.legacy.repository.CommentRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;

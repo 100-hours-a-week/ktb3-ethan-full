@@ -1,18 +1,11 @@
 package org.restapi.springrestapi.repository;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-
-import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository {
-	User save(User user);
-	Optional<User> findById(Long id);
-	Optional<User> findByEmail(String email);
-	boolean existsByEmail(String email);
-	boolean existsByNickName(String nickName);
-	void deleteById(Long id);
-	Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> ids);
+
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    boolean existsByEmail(String email);
+    boolean existsByNickname(String nickname);
 }

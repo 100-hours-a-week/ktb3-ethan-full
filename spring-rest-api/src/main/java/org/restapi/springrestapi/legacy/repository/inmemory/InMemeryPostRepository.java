@@ -1,11 +1,11 @@
-package org.restapi.springrestapi.repository.inmemory;
+package org.restapi.springrestapi.legacy.repository.inmemory;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.restapi.springrestapi.model.Post;
-import org.restapi.springrestapi.repository.PostRepository;
+import org.restapi.springrestapi.legacy.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

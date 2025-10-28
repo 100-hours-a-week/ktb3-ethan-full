@@ -8,7 +8,7 @@ import org.restapi.springrestapi.dto.comment.PatchCommentRequest;
 import org.restapi.springrestapi.dto.comment.RegisterCommentRequest;
 import org.restapi.springrestapi.finder.CommentFinder;
 import org.restapi.springrestapi.model.Comment;
-import org.restapi.springrestapi.repository.CommentRepository;
+import org.restapi.springrestapi.legacy.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 

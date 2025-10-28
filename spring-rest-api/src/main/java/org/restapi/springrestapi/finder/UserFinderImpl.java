@@ -35,7 +35,7 @@ public class UserFinderImpl implements UserFinder {
 
 	@Override
 	public boolean existsByNickName(String nickName) {
-		return userRepository.existsByNickName(nickName);
+		return userRepository.existsByNickname(nickName);
 	}
 
     @Override

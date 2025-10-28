@@ -1,4 +1,4 @@
-package org.restapi.springrestapi.repository.inmemory;
+package org.restapi.springrestapi.legacy.repository.inmemory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
-import org.restapi.springrestapi.repository.UserRepository;
+import org.restapi.springrestapi.legacy.repository.UserRepository;
 import org.restapi.springrestapi.common.util.SeedLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

@@ -6,7 +6,7 @@ import org.restapi.springrestapi.dto.post.PostSimpleResult;
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.PostErrorCode;
 import org.restapi.springrestapi.model.Post;
-import org.restapi.springrestapi.repository.PostRepository;
+import org.restapi.springrestapi.legacy.repository.PostRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;

@@ -13,7 +13,7 @@ import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.finder.PostFinder;
 import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Post;
-import org.restapi.springrestapi.repository.PostRepository;
+import org.restapi.springrestapi.legacy.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
