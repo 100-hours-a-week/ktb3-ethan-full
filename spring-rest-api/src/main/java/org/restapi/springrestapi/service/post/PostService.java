@@ -11,7 +11,6 @@ public interface PostService {
 	PostSimpleResult registerPost(Long userId, RegisterPostRequest command);
 	PostListResult getPostList(int cursor, int limit);
 	PostResult getPost(Long userId, Long id);
-	PostResult updatePost(Long userId, Long id, PatchPostRequest command);
-	PatchPostLikeResult updatePostLike(Long userId, Long postId);
+    PostResult updatePost(Long userId, Long id, PatchPostRequest request);
 	void deletePost(Long userId, Long postId);
 }

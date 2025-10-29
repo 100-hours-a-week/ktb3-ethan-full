@@ -9,14 +9,14 @@ public record UserProfileResult(
 	Long id,
     String email,
 	String nickname,
-	String profileImage
+	String profileImageUrl
 ) {
 	public static UserProfileResult from(User userProfileResult) {
 		return UserProfileResult.builder()
 			.id(userProfileResult.getId())
 			.email(userProfileResult.getEmail())
 			.nickname(userProfileResult.getNickname())
-			.profileImage(userProfileResult.getProfileImage())
+			.profileImageUrl(userProfileResult.getProfileImageUrl())
 			.build();
 	}
 }

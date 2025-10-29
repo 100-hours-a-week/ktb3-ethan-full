@@ -9,4 +9,5 @@ public interface CommentFinder {
 	Comment findById(Long id);
 	List<CommentResult> findAll(Long postId, int cursor, int limit);
 	boolean existsById(Long id);
+    boolean existsByIdAndUserId(Long id, Long userId);
 }

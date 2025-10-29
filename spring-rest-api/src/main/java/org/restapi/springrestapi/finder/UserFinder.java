@@ -13,6 +13,7 @@ public interface UserFinder {
 	 * @return 조회된 사용자 엔티티를 반환합니다.
 	 */
 	User findById(Long id);
+    User findProxyById(Long id);
 
 	/**
 	 * 사용자의 존재 여부만 확인합니다.

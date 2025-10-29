@@ -10,6 +10,7 @@ import org.restapi.springrestapi.dto.user.RegisterUserRequest;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,48 +21,59 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
 	private Long id;
-	private String email;
-	private String password;
-	private String nickname;
-	private String profileImage; // nullable
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.PERSIST)
+    @Column(nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+	private String profileImageUrl; // nullable
+
+    @Column(nullable = false)
+    private LocalDateTime joinAt;
+
+    @OneToMany(mappedBy = "author")
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments = new ArrayList<>();
+
+    /*
+    constructor
+    - from(RegisterUserRequest, PasswordEncoder)
+     */
 
     public static User from(
 		RegisterUserRequest command,
 		PasswordEncoder passwordEncoder
 	) {
 		return User.builder()
-			.email(command.getEmail())
-			.password(passwordEncoder.encode(command.getPassword()))
-			.nickname(command.getNickname())
-			.profileImage(command.getProfileImage())
-			.build();
+                .nickname(command.getNickname())
+                .email(command.getEmail())
+                .password(passwordEncoder.encode(command.getPassword()))
+                .profileImageUrl(command.getProfileImageUrl())
+                .joinAt(LocalDateTime.now())
+                .build();
 	}
+
+    /*
+    setter
+    - updateProfile(PatchProfileRequest)
+    - updatePassword(String, PasswordEncoder)
+     */
 	public void updateProfile(PatchProfileRequest command) {
 		this.nickname = command.getNickname();
-		if (command.getProfileImage() != null) {
-			this.profileImage = command.getProfileImage();
+		if (command.getProfileImageUrl() != null) {
+			this.profileImageUrl = command.getProfileImageUrl();
 		}
 	}
+
 	public void updatePassword(String password, PasswordEncoder passwordEncoder) {
 		this.password = passwordEncoder.encode(password);
 	}
-
-    public void addPost(Post post) {
-        if (post == null) return;
-        if (posts.contains(post)) return;
-        this.posts.add(post);
-        post.changeAuthor(this);
-    }
-
-    public void removePost(Post post) {
-        if (post == null) return;
-        if (!posts.contains(post)) return;
-        this.posts.remove(post);
-        post.changeAuthor(null);
-    }
 }

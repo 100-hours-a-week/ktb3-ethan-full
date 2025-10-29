@@ -9,5 +9,5 @@ public class PatchProfileRequest {
 	@ValidNickname
 	private String nickname;
 
-	private String profileImage;
+	private String profileImageUrl;
 }

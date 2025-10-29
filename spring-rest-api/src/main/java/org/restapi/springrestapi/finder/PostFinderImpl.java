@@ -6,13 +6,15 @@ import org.restapi.springrestapi.dto.post.PostSimpleResult;
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.PostErrorCode;
 import org.restapi.springrestapi.model.Post;
-import org.restapi.springrestapi.legacy.repository.PostRepository;
+import org.restapi.springrestapi.repository.PostRepository;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostFinderImpl implements PostFinder {
 	private final PostRepository postRepository;
 
@@ -22,7 +24,12 @@ public class PostFinderImpl implements PostFinder {
 			.orElseThrow(() -> new AppException(PostErrorCode.POST_NOT_FOUND));
 	}
 
-	@Override
+    @Override
+    public Post findProxyById(Long id) {
+        return postRepository.getReferenceById(id);
+    }
+
+    @Override
 	public List<PostSimpleResult> findAll(int cursor, int limit) {
 		return postRepository.findAll(cursor, limit).stream().map(PostSimpleResult::from).toList();
 	}
@@ -32,8 +39,8 @@ public class PostFinderImpl implements PostFinder {
 		return postRepository.findById(id).isPresent();
 	}
 
-	@Override
-	public boolean existsByIdAndUserId(Long postId, Long userId) {
-		return postRepository.existsByIdAndUserId(postId, userId);
-	}
+    @Override
+    public boolean existsByIdAndAuthorId(Long postId, Long authorId) {
+        return postRepository.existsByIdAndAuthorId(postId, authorId);
+    }
 }

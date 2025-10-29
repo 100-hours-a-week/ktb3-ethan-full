@@ -9,6 +9,7 @@ import org.restapi.springrestapi.dto.post.RegisterPostRequest;
 import org.restapi.springrestapi.dto.post.PostSimpleResult;
 import org.restapi.springrestapi.exception.code.SuccessCode;
 import org.restapi.springrestapi.security.AuthContext;
+import org.restapi.springrestapi.service.post.PostLikeService;
 import org.restapi.springrestapi.service.post.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Posts", description = "게시글 관련 API")
 public class PostController {
 	private final PostService postService;
+    private final PostLikeService postLikeService;
 	private final AuthContext authContext;
 
 
@@ -109,7 +111,7 @@ public class PostController {
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()
-			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePostLike(userId, id)));
+			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postLikeService.togglePostLike(userId, id)));
 	}
 
 	@Operation(summary = "게시글 삭제", description = "자신이 작성한 게시글을 삭제합니다.")

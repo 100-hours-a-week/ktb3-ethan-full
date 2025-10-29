@@ -1,6 +1,7 @@
 package org.restapi.springrestapi.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -20,43 +21,69 @@ import lombok.Getter;
 public class Post {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+    @Column(nullable = false)
 	private String title;
-	private String content;
-	private String image; // nullable
 
-	private List<Long> likeUsers;
-	private List<Long> comments;
-	private int viewCount;
+    @Column(nullable = false)
+    private String content;
 
-	LocalDateTime createdAt;
+    private String thumbnailImageUrl;
+
+    @Column(nullable = false)
+    LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    LocalDateTime updatedAt;
+
+    // 집계 컬럼
+	private int likeCount;
+    private int viewCount;
+	private int commentCount;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User author;
 
+    @OneToMany(mappedBy = "like", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostLike> likes = new ArrayList<>();
 
-    public static Post from(User author, RegisterPostRequest command) {
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+
+    /*
+    constructor=
+    - from(RegisterPostRequest)
+    - from(PatchPostRequest, Post)
+     */
+    public static Post from(RegisterPostRequest command) {
 		return Post.builder()
-			.author(author)
-			.title(command.title())
-			.content(command.content())
-			.image(command.image())
-			.createdAt(LocalDateTime.now())
-			.build();
+                .title(command.title())
+                .content(command.content())
+                .thumbnailImageUrl(command.thumbnailImageUrl())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
 	}
+
 	public static Post from(PatchPostRequest command, Post prevPost) {
 		return prevPost.toBuilder()
-			.title(command.title())
-			.content(command.content())
-			.image(command.image())
-			.build();
+                .title(command.title())
+                .content(command.content())
+                .thumbnailImageUrl(command.thumbnailImageUrl())
+                .updatedAt(LocalDateTime.now())
+                .build();
 	}
 
-    protected void changeAuthor(User author) {
-        this.author = author;
-        if (author != null) {
-            author.getPosts().remove(this);
+    public void changeAuthor(User newAuthor) {
+        if (this.author != null) {
+            this.author.getPosts().remove(this);
         }
-
+        this.author = newAuthor;
+        if (this.author != null) {
+            this.author.getPosts().add(this);
+        }
     }
 }

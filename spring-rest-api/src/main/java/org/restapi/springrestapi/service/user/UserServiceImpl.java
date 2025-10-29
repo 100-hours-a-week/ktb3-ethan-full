@@ -8,12 +8,15 @@ import org.restapi.springrestapi.dto.user.UserProfileResult;
 import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.User;
 import org.restapi.springrestapi.repository.UserRepository;
+import org.restapi.springrestapi.validator.UserValidator;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
 	private final UserFinder userFinder;
@@ -22,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Long register(RegisterUserRequest command) {
-		userValidator.validateOnRegister(command.getEmail(), command.getPassword());
+		userValidator.validateRegisterUser(command.getEmail(), command.getPassword());
 
 		User user = User.from(command, passwordEncoder);
 
