@@ -1,10 +1,6 @@
 package org.restapi.springrestapi.finder;
 
-import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.model.User;
-
-import java.util.Collection;
-import java.util.Map;
 
 public interface UserFinder {
 	/**
@@ -13,6 +9,7 @@ public interface UserFinder {
 	 * @return 조회된 사용자 엔티티를 반환합니다.
 	 */
 	User findById(Long id);
+    User findProxyById(Long id);
 
 	/**
 	 * 사용자의 존재 여부만 확인합니다.
@@ -29,9 +26,4 @@ public interface UserFinder {
 	 * 닉네임 중복 여부를 확인합니다.
 	 */
 	boolean existsByNickName(String nickName);
-
-    /**
-     * 여러 post id에 대해 user의 nickname을 한 번에 조회합니다.
-     */
-    Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> userIds);
 }

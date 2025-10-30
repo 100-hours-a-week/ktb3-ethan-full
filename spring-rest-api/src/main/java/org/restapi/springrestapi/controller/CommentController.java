@@ -59,7 +59,7 @@ public class CommentController {
 	@GetMapping("/{postId}/comments")
 	public ResponseEntity<APIResponse<CommentListResult>> getCommentAll(
 		@PathVariable Long postId,
-		@RequestParam(defaultValue = "0") int cursor,
+		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int limit
 	) {
 		return ResponseEntity.ok()

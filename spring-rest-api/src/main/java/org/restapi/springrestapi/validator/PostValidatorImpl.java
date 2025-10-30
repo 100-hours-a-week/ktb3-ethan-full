@@ -1,26 +1,19 @@
-package org.restapi.springrestapi.service.post;
+package org.restapi.springrestapi.validator;
 
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.PostErrorCode;
-import org.restapi.springrestapi.exception.code.UserErrorCode;
 import org.restapi.springrestapi.finder.PostFinder;
-import org.restapi.springrestapi.finder.UserFinder;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostValidatorImpl implements PostValidator {
-    private final UserFinder userFinder;
+    private final UserValidator userValidator;
     private final PostFinder postFinder;
-
-    @Override
-    public void validateAuthorId(Long userId) {
-        if (!userFinder.existsById(userId)) {
-            throw new AppException(UserErrorCode.USER_NOT_FOUND);
-        }
-    }
 
     @Override
     public void validatePostExists(Long postId) {
@@ -30,9 +23,16 @@ public class PostValidatorImpl implements PostValidator {
     }
 
     @Override
-    public void validateAuthorPermission(Long userId, Long postId) {
-        if (!postFinder.existsByIdAndUserId(postId, userId)) {
+    public void validateAuthorPermission(Long postId, Long authorId) {
+        if (!postFinder.existsByIdAndAuthorId(postId, authorId)) {
             throw new AppException(PostErrorCode.PERMISSION_DENIED);
         }
+    }
+
+    @Override
+    public void validateAuthor(Long authorId, Long postId) {
+        userValidator.validateUserExists(authorId);
+        validatePostExists(postId);
+        validateAuthorPermission(postId, authorId);
     }
 }

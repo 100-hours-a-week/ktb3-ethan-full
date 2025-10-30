@@ -49,10 +49,6 @@ public class UserController {
 		final Long id = userService.register(request);
 		return ResponseEntity.status(SuccessCode.REGISTER_SUCCESS.getStatus())
 				.body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, new RegisterUserResponse(id)));
-		/*
-		ApiResponse가 ResponseEntity을 생성하고 응답해도 되나?
-		컨트롤러에서 상태코드를 중복해서 지정하는게 최선인가?
-		 */
 	}
 	@Operation(summary = "사용자 프로필 조회", description = "사용자 ID로 프로필을 조회합니다.")
 	@ApiResponses({

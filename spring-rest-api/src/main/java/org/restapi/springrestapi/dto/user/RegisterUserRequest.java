@@ -17,5 +17,5 @@ public class RegisterUserRequest {
 	@ValidNickname
 	private String nickname;
 
-	private String profileImage;
+	private String profileImageUrl;
 }

@@ -15,4 +15,10 @@ public record CommentListResult(
 			.nextCursor(nextCursor)
 			.build();
 	}
+    public static CommentListResult empty() {
+        return CommentListResult.builder()
+                .comments(null)
+                .nextCursor(0)
+                .build();
+    }
 }

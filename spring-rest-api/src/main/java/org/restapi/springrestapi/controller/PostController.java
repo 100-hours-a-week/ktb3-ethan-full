@@ -6,9 +6,10 @@ import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
-import org.restapi.springrestapi.dto.post.PostSimpleResult;
+import org.restapi.springrestapi.dto.post.PostSummary;
 import org.restapi.springrestapi.exception.code.SuccessCode;
 import org.restapi.springrestapi.security.AuthContext;
+import org.restapi.springrestapi.service.post.PostLikeService;
 import org.restapi.springrestapi.service.post.PostService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Posts", description = "게시글 관련 API")
 public class PostController {
 	private final PostService postService;
+    private final PostLikeService postLikeService;
 	private final AuthContext authContext;
 
 
@@ -44,7 +46,7 @@ public class PostController {
 		@ApiResponse(responseCode = "400", description = "요청 필드 유효성 실패")
 	})
 	@PostMapping
-	public ResponseEntity<APIResponse<PostSimpleResult>> registerPost(
+	public ResponseEntity<APIResponse<PostSummary>> registerPost(
 		@Valid @RequestBody RegisterPostRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
@@ -59,7 +61,7 @@ public class PostController {
 	})
 	@GetMapping
 	public ResponseEntity<APIResponse<PostListResult>> getPostList(
-		@RequestParam(defaultValue = "0") int cursor,
+		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int limit
 	) {
 		return ResponseEntity.ok()
@@ -109,7 +111,7 @@ public class PostController {
 	) {
 		final Long userId = authContext.requiredUserId();
 		return ResponseEntity.ok()
-			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postService.updatePostLike(userId, id)));
+			.body(APIResponse.ok(SuccessCode.PATCH_SUCCESS, postLikeService.togglePostLike(userId, id)));
 	}
 
 	@Operation(summary = "게시글 삭제", description = "자신이 작성한 게시글을 삭제합니다.")

@@ -1,12 +1,11 @@
 package org.restapi.springrestapi.finder;
 
-import java.util.List;
-
-import org.restapi.springrestapi.dto.comment.CommentResult;
 import org.restapi.springrestapi.model.Comment;
+import org.springframework.data.domain.Slice;
 
 public interface CommentFinder {
 	Comment findById(Long id);
-	List<CommentResult> findAll(Long postId, int cursor, int limit);
+	Slice<Comment> findCommentSlice(Long postId, Long cursor, int limit);
 	boolean existsById(Long id);
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
