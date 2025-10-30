@@ -1,13 +1,11 @@
 package org.restapi.springrestapi.service.auth;
 
-import org.restapi.springrestapi.config.PasswordEncoder;
 import org.restapi.springrestapi.dto.auth.LoginResult;
 import org.restapi.springrestapi.dto.user.LoginRequest;
-import org.restapi.springrestapi.exception.AppException;
-import org.restapi.springrestapi.exception.code.AuthErrorCode;
+import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.User;
 
-import org.restapi.springrestapi.repository.UserRepository;
+import org.restapi.springrestapi.validator.AuthValidator;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -15,21 +13,15 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
+    private final UserFinder userFinder;
+    private final AuthValidator authValidator;
 
 	@Override
 	public LoginResult login(LoginRequest loginRequest) {
-		User user = userRepository.findByEmail(loginRequest.email())
-			.orElseThrow(() -> new AppException(AuthErrorCode.INVALID_EMAIL_OR_PASSWORD));
-		if (!passwordEncoder.matches(loginRequest.password(), user.getPassword())) {
-			throw new AppException(AuthErrorCode.INVALID_EMAIL_OR_PASSWORD);
-		}
+        User user = userFinder.findByEmail(loginRequest.email());
 
-		return LoginResult.builder()
-			.userId(user.getId())
-			.nickname(user.getNickname())
-			.accessToken(user.getId().toString())
-			.build();
+        authValidator.validateSamePassword(loginRequest.password(), user.getPassword());
+
+		return LoginResult.from(user, user.getId().toString());
 	}
 }

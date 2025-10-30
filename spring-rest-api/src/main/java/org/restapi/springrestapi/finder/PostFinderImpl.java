@@ -36,7 +36,9 @@ public class PostFinderImpl implements PostFinder {
 
         // check limit range
         final int SIZE = Math.min(Math.max(limit, 1), 10);
-
+        if (cursor == null) {
+            return postRepository.findSlice(PageRequest.of(0, SIZE));
+        }
         return postRepository.findSlice(cursor, PageRequest.of(0, SIZE));
     }
 
@@ -51,7 +53,10 @@ public class PostFinderImpl implements PostFinder {
     }
 
     @Override
-    public boolean isDidLikeUser(Long postId, Long userId) {
-        return postLikeRepository.existsByUserIdAndPostId(userId, postId);
+    public boolean isDidLikeUser(Long postId, Long userIdOrNull) {
+        if (userIdOrNull == null) {
+            return false;
+        }
+        return postLikeRepository.existsByUserIdAndPostId(userIdOrNull, postId);
     }
 }

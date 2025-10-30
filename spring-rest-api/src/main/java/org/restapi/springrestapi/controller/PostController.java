@@ -1,5 +1,6 @@
 package org.restapi.springrestapi.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.restapi.springrestapi.common.APIResponse;
 import org.restapi.springrestapi.dto.post.PatchPostLikeResult;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
@@ -39,7 +40,7 @@ public class PostController {
 	private final AuthContext authContext;
 
 
-	@Operation(summary = "게시글 등록", description = "현재 로그인 사용자가 새 게시글을 등록합니다.")
+    @Operation(summary = "게시글 등록", description = "현재 로그인 사용자가 새 게시글을 등록합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "등록 성공"),
 		@ApiResponse(responseCode = "401", description = "인증 필요"),
@@ -75,11 +76,13 @@ public class PostController {
 	})
 	@GetMapping("/{id}")
 	public ResponseEntity<APIResponse<PostResult>> getPostDetail(
-		@PathVariable Long id
+		@PathVariable Long id,
+        HttpServletRequest request
 	) {
 		final Long userId = authContext.currentUserIdOrNull();
+
 		return ResponseEntity.ok()
-			.body(APIResponse.ok(SuccessCode.GET_SUCCESS, postService.getPost(userId, id)));
+			.body(APIResponse.ok(SuccessCode.GET_SUCCESS, postService.getPost(request, userId, id)));
 	}
 
 	@Operation(summary = "게시글 수정", description = "자신이 작성한 게시글을 수정합니다.")

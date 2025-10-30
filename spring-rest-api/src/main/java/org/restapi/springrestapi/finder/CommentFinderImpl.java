@@ -29,6 +29,9 @@ public class CommentFinderImpl implements CommentFinder {
         // check limit range
         final int SIZE = Math.min(Math.max(limit, 1), 10);
 
+        if (cursor == null) {
+            return commentRepository.findSlice(postId, PageRequest.of(0, SIZE));
+        }
         return commentRepository.findSlice(postId, cursor, PageRequest.of(0, SIZE));
     }
 

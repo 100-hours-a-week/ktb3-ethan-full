@@ -11,5 +11,4 @@ public interface UserValidator {
         validateDuplicateEmail(email);
         validateDuplicateNickname(nickname);
     }
-    void validatePasswordChange(String newPassword, String confirmPassword);
 }

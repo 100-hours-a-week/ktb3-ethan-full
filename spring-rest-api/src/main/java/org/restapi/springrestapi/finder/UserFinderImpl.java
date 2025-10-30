@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,5 +41,11 @@ public class UserFinderImpl implements UserFinder {
 	public boolean existsByNickName(String nickName) {
 		return userRepository.existsByNickname(nickName);
 	}
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                ()-> new AppException(UserErrorCode.USER_NOT_FOUND));
+    }
 
 }
