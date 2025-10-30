@@ -10,5 +10,5 @@ public interface PostFinder {
 	Slice<PostSummary> findPostSummarySlice(Long cursor, int limit);
 	boolean existsById(Long id);
 	boolean existsByIdAndAuthorId(Long postId, Long authorId);
-    boolean isDidLikeUser(Long postId, Long userId);
+    boolean isDidLikeUser(Long postId, Long userIdOrNull);
 }

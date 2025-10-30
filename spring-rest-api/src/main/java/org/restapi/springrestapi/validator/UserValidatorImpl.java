@@ -34,11 +34,4 @@ public class UserValidatorImpl implements UserValidator {
             throw new AppException(UserErrorCode.NICKNAME_CONFLICT);
         }
     }
-
-    @Override
-    public void validatePasswordChange(String newPassword, String confirmPassword) {
-        if (!newPassword.equals(confirmPassword)) {
-            throw new AppException(UserErrorCode.NOT_MATCH_NEW_PASSWORD);
-        }
-    }
 }

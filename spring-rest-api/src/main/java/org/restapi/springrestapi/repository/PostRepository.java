@@ -16,14 +16,28 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         """
         select new org.restapi.springrestapi.dto.post.PostSummary (
                 p.id, a.id, a.nickname, p.title, p.likeCount, p.commentCount, p.viewCount, p.createdAt)
-        from Post p join p.author a
-        where (:cursorId is null or p.id < :cursorId)
+        from Post p left join p.author a
         order by p.id desc
         """
+    )
+    Slice<PostSummary> findSlice(Pageable pageable);
+
+    @Query(
+            """
+            select new org.restapi.springrestapi.dto.post.PostSummary (
+                    p.id, a.id, a.nickname, p.title, p.likeCount, p.commentCount, p.viewCount, p.createdAt)
+            from Post p left join p.author a
+            where p.id < :cursorId
+            order by p.id desc
+            """
     )
     Slice<PostSummary> findSlice(@Param("cursorId") Long cursorId, Pageable pageable);
 
     boolean existsByIdAndAuthorId(Long id, Long authorId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = :id")
+    int incrementViewCount(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.commentCount = p.commentCount + 1 where p.id = :id")

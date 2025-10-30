@@ -8,6 +8,7 @@ import org.restapi.springrestapi.dto.user.UserProfileResult;
 import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.User;
 import org.restapi.springrestapi.repository.UserRepository;
+import org.restapi.springrestapi.validator.AuthValidator;
 import org.restapi.springrestapi.validator.UserValidator;
 import org.springframework.stereotype.Service;
 
@@ -22,8 +23,9 @@ public class UserServiceImpl implements UserService {
 	private final UserFinder userFinder;
 	private final PasswordEncoder passwordEncoder;
 	private final UserValidator userValidator;
+    private final AuthValidator authValidator;
 
-	@Override
+    @Override
 	public Long register(RegisterUserRequest command) {
 		userValidator.validateRegisterUser(command.getEmail(), command.getPassword());
 
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void changePassword(Long id, ChangePasswordRequest request) {
-		userValidator.validatePasswordChange(request.password(), request.confirmPassword());
+        authValidator.validateNewPassword(request.password(), request.confirmPassword());
 
 		User user = userFinder.findById(id);
 		user.updatePassword(request.password(), passwordEncoder);

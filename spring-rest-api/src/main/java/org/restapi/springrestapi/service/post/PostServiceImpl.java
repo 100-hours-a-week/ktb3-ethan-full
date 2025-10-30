@@ -2,6 +2,7 @@ package org.restapi.springrestapi.service.post;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
@@ -30,6 +31,8 @@ public class PostServiceImpl implements PostService {
     private final PostValidator postValidator;
     private final UserValidator userValidator;
 
+    private final LocalPostViewDebounce localPostViewDebounce;
+
     @Override
 	public PostSummary registerPost(Long userId, RegisterPostRequest command) {
 		userValidator.validateUserExists(userId);
@@ -52,19 +55,22 @@ public class PostServiceImpl implements PostService {
         return PostListResult.from(postList, nextCursor);
     }
 
+    @Override
+    public PostResult getPost(HttpServletRequest request, Long userIdOrNull, Long id) {
+        Post post = postFinder.findById(id);
+
+        final boolean didLike = postFinder.isDidLikeUser(id, userIdOrNull);
+        if (!localPostViewDebounce.seenRecently(request, userIdOrNull, id)) {
+            postRepository.incrementViewCount(id);
+        }
+
+        return PostResult.from(post, didLike);
+    }
+
     private int calcNextCursor(List<PostSummary> postList) {
         long lastIdDesc = postList.get(postList.size() - 1).id();
         return (int) Math.max(lastIdDesc - 1, 0);
     }
-
-	@Override
-	public PostResult getPost(Long userId, Long id) {
-		Post post = postFinder.findById(id);
-
-        final boolean didLike = postFinder.isDidLikeUser(id, userId);
-
-		return PostResult.from(post, didLike);
-	}
 
 	@Override
 	public PostResult updatePost(Long userId, Long id, PatchPostRequest command) {
