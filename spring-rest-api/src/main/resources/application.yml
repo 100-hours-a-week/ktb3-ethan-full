@@ -12,6 +12,12 @@ spring:
     url: jdbc:mysql://localhost:3306/spring_rest_api?serverTimezone=UTC&useSSL=false
     username: root
     password: admin123
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
 app:
   data:
     dir: ./data
