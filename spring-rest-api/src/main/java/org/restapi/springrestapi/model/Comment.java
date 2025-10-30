@@ -36,17 +36,29 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User user;
 
-	public static Comment from(RegisterCommentRequest command, Post post) {
+	public static Comment from(RegisterCommentRequest command, User user) {
 		return Comment.builder()
-			.post(post)
-			.content(command.content())
-			.createdAt(LocalDateTime.now())
-			.build();
+                .content(command.content())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .user(user)
+			    .build();
 	}
 
 	public void updateContent(String newContent) {
-		if (newContent != null) {
+		if (newContent != null && !newContent.equals(this.content)) {
 			this.content = newContent;
+            this.updatedAt = LocalDateTime.now();
 		}
 	}
+
+    public void changePost(Post newPost) {
+        if (this.post != null) {
+            this.post.getComments().remove(this);
+        }
+        this.post = newPost;
+        if (this.post != null) {
+            this.post.getComments().add(this);
+        }
+    }
 }

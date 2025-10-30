@@ -6,7 +6,7 @@ import org.restapi.springrestapi.dto.post.PatchPostRequest;
 import org.restapi.springrestapi.dto.post.PostListResult;
 import org.restapi.springrestapi.dto.post.PostResult;
 import org.restapi.springrestapi.dto.post.RegisterPostRequest;
-import org.restapi.springrestapi.dto.post.PostSimpleResult;
+import org.restapi.springrestapi.dto.post.PostSummary;
 import org.restapi.springrestapi.exception.code.SuccessCode;
 import org.restapi.springrestapi.security.AuthContext;
 import org.restapi.springrestapi.service.post.PostLikeService;
@@ -46,7 +46,7 @@ public class PostController {
 		@ApiResponse(responseCode = "400", description = "요청 필드 유효성 실패")
 	})
 	@PostMapping
-	public ResponseEntity<APIResponse<PostSimpleResult>> registerPost(
+	public ResponseEntity<APIResponse<PostSummary>> registerPost(
 		@Valid @RequestBody RegisterPostRequest request
 	) {
 		final Long userId = authContext.requiredUserId();
@@ -61,7 +61,7 @@ public class PostController {
 	})
 	@GetMapping
 	public ResponseEntity<APIResponse<PostListResult>> getPostList(
-		@RequestParam(defaultValue = "0") int cursor,
+		@RequestParam(required = false) Long cursor,
 		@RequestParam(defaultValue = "10") int limit
 	) {
 		return ResponseEntity.ok()

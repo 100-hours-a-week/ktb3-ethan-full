@@ -33,7 +33,9 @@ public class PostLikeService {
 
         int likeCount;
         if (wasLiked) {
-            postLikeRepository.delete(postLikeRepository.findByUserIdAndPostId(userId, postId));
+            PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId);
+            postLike.unLike();
+            postLikeRepository.delete(postLike);
             likeCount = postRepository.decreaseLikeCount(postId);
         } else {
             User user = userFinder.findProxyById(userId);

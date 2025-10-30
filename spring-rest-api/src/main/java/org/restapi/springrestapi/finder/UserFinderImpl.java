@@ -1,6 +1,5 @@
 package org.restapi.springrestapi.finder;
 
-import org.restapi.springrestapi.dto.user.SimpleUserInfo;
 import org.restapi.springrestapi.exception.AppException;
 import org.restapi.springrestapi.exception.code.UserErrorCode;
 import org.restapi.springrestapi.model.User;
@@ -9,9 +8,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Collection;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -45,8 +41,4 @@ public class UserFinderImpl implements UserFinder {
 		return userRepository.existsByNickname(nickName);
 	}
 
-    @Override
-    public Map<Long, SimpleUserInfo> findSimpleInfoByIds(Collection<Long> userIds) {
-        return userRepository.findSimpleInfoByIds(userIds);
-    }
 }

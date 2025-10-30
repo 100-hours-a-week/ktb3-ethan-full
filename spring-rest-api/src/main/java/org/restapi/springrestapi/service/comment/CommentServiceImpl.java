@@ -8,12 +8,15 @@ import org.restapi.springrestapi.dto.comment.PatchCommentRequest;
 import org.restapi.springrestapi.dto.comment.RegisterCommentRequest;
 import org.restapi.springrestapi.finder.CommentFinder;
 import org.restapi.springrestapi.finder.PostFinder;
+import org.restapi.springrestapi.finder.UserFinder;
 import org.restapi.springrestapi.model.Comment;
+import org.restapi.springrestapi.model.User;
 import org.restapi.springrestapi.repository.CommentRepository;
 import org.restapi.springrestapi.model.Post;
 import org.restapi.springrestapi.repository.PostRepository;
 import org.restapi.springrestapi.validator.CommentValidator;
 import org.restapi.springrestapi.validator.PostValidator;
+import org.restapi.springrestapi.validator.UserValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,36 +33,48 @@ public class CommentServiceImpl implements CommentService {
 	private final CommentValidator commentValidator;
     private final PostFinder postFinder;
     private final PostValidator postValidator;
+    private final UserFinder userFinder;
+    private final UserValidator userValidator;
 
     @Override
 	public CommentResult registerComment(Long userId, RegisterCommentRequest request, Long postId) {
-		commentValidator.validateOrigin(userId, postId);
+        userValidator.validateUserExists(userId);
+        postValidator.validatePostExists(postId);
+
+        User user = userFinder.findProxyById(userId);
+		Comment comment = Comment.from(request, user);
 
         Post post = postFinder.findProxyById(postId);
-		Comment comment = Comment.from(request, post);
+        comment.changePost(post);
         postRepository.increaseCommentCount(postId);
 
 		return CommentResult.from(commentRepository.save(comment));
 	}
 
 	@Override
-	public CommentListResult getCommentList(Long postId, int cursor, int limit) {
+	public CommentListResult getCommentList(Long postId, Long cursor, int limit) {
 		postValidator.validatePostExists(postId);
 
-		List<CommentResult> commentList = commentFinder.findAll(postId, cursor, limit);
+		List<Comment> commentList = commentFinder.findCommentSlice(postId, cursor, limit).getContent();
 
 		if (commentList.isEmpty()) {
 			return CommentListResult.empty();
 		}
 
-		return CommentListResult.from(commentList, (int)Math.max(commentList.get(0).id() - 1, 0));
-
+        List<CommentResult> commentResultsList = commentList.stream().map(CommentResult::from).toList();
+        final int nextCursor = calcNextCursor(commentList);
+		return CommentListResult.from(commentResultsList, nextCursor);
 	}
+
+    private int calcNextCursor(List<Comment> commentList) {
+        long lastIdDesc = commentList.get(commentList.size() - 1).getId();
+        return (int) Math.max(lastIdDesc - 1, 0);
+    }
 
 	@Override
 	public CommentResult updateComment(Long userId, PatchCommentRequest request, Long postId, Long id) {
-		commentValidator.validateOrigin(userId, postId);
-        commentValidator.validateOwner(userId, id);
+        postValidator.validatePostExists(postId);
+        commentValidator.validateOwner(id, userId);
 
 		Comment comment = commentFinder.findById(id);
 		comment.updateContent(request.content());
@@ -69,8 +84,12 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void deleteComment(Long userId, Long id, Long postId) {
-		commentValidator.validateOrigin(userId, postId);
+        userValidator.validateUserExists(userId);
+        postValidator.validatePostExists(postId);
+        commentValidator.validateCommentExists(id);
         commentValidator.validateOwner(userId, id);
+
+        (commentFinder.findById(id)).changePost(null);
 
         postRepository.decreaseCommentCount(postId);
 		commentRepository.deleteById(id);
