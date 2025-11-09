@@ -9,15 +9,14 @@ spring:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/spring_rest_api?serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://localhost:3306/spring_rest_api?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
     username: root
     password: admin123
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
-    properties:
-      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQLDialect
 app:
   data:
     dir: ./data
