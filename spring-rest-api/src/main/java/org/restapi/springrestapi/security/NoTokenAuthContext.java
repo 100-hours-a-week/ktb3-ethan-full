@@ -12,7 +12,7 @@ public class NoTokenAuthContext implements AuthContext {
 
 	@Override
 	public Long currentUserIdOrNull() {
-		String userId = request.getHeader("Authorization");
+		String userId = request.getHeader("access_token");
 		if (userId == null || userId.isBlank()) {
 			return null;
 		}

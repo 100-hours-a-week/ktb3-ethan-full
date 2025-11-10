@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface PostRepository extends JpaRepository<Post, Long> {
 
 
@@ -37,21 +39,25 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = :id")
-    int incrementViewCount(@Param("id") Long id);
+    void incrementViewCount(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.commentCount = p.commentCount + 1 where p.id = :id")
-    int increaseCommentCount(@Param("id") Long id);
+    void increaseCommentCount(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.commentCount = p.commentCount - 1 where p.id = :id")
-    int decreaseCommentCount(@Param("id") Long id);
+    void decreaseCommentCount(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.likeCount = p.likeCount + 1 where p.id = :id")
-    int increaseLikeCount(@Param("id") Long id);
+    void increaseLikeCount(@Param("id") Long id);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("update Post p set p.likeCount = p.likeCount - 1 where p.id = :id")
-    int decreaseLikeCount(@Param("id") Long id);
+    void decreaseLikeCount(@Param("id") Long id);
+
+    @Query("select p.likeCount from Post p where p.id = :id")
+    Optional<Integer> findLikeCountById(@Param("id") Long id);
+
 }

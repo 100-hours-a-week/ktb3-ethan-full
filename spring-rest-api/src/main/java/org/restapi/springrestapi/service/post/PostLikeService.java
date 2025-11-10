@@ -36,15 +36,18 @@ public class PostLikeService {
             PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId);
             postLike.unLike();
             postLikeRepository.delete(postLike);
-            likeCount = postRepository.decreaseLikeCount(postId);
+            postRepository.decreaseLikeCount(postId);
+
         } else {
             User user = userFinder.findProxyById(userId);
             Post post = postFinder.findProxyById(postId);
             PostLike like = new PostLike(user, post);
+            postRepository.increaseLikeCount(postId);
 
             postLikeRepository.save(like);
-            likeCount = postRepository.increaseLikeCount(postId);
         }
+
+        likeCount = postRepository.findLikeCountById(postId).orElse(0);
         return PatchPostLikeResult.from(likeCount, !wasLiked);
     }
 }

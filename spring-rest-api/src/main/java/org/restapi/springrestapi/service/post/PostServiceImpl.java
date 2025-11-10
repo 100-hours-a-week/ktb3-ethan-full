@@ -69,7 +69,7 @@ public class PostServiceImpl implements PostService {
 
     private int calcNextCursor(List<PostSummary> postList) {
         long lastIdDesc = postList.get(postList.size() - 1).id();
-        return (int) Math.max(lastIdDesc - 1, 0);
+        return (int) Math.max(lastIdDesc - 1, 1);
     }
 
 	@Override

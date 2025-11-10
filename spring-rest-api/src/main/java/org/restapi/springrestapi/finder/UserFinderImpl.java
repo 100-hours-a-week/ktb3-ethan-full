@@ -34,17 +34,17 @@ public class UserFinderImpl implements UserFinder {
 
 	@Override
 	public boolean existsByEmail(String email) {
-		return userRepository.existsByEmail(email);
+		return userRepository.existsByEmailAndDeletedAtIsNull(email);
 	}
 
 	@Override
 	public boolean existsByNickName(String nickName) {
-		return userRepository.existsByNickname(nickName);
+		return userRepository.existsByNicknameAndDeletedAtIsNull(nickName);
 	}
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
+        return userRepository.findByEmailAndDeletedAtIsNull(email).orElseThrow(
                 ()-> new AppException(UserErrorCode.USER_NOT_FOUND));
     }
 

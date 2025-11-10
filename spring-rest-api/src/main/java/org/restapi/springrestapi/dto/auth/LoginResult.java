@@ -8,13 +8,15 @@ import org.restapi.springrestapi.model.User;
 public record LoginResult(
 	Long userId,
 	String nickname,
-	String accessToken
+	String accessToken,
+    String profileImageUrl
 ) {
     public static LoginResult from(User user, String accessToken) {
         return LoginResult.builder()
-            .userId(user.getId())
-            .nickname(user.getNickname())
-            .accessToken(accessToken)
-            .build();
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .profileImageUrl(user.getProfileImageUrl())
+                .accessToken(accessToken)
+                .build();
     }
 }
