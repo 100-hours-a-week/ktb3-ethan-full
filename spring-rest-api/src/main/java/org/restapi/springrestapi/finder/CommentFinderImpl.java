@@ -27,7 +27,7 @@ public class CommentFinderImpl implements CommentFinder {
     @Override
     public Slice<Comment> findCommentSlice(Long postId, Long cursor, int limit) {
         // check limit range
-        final int SIZE = Math.min(Math.max(limit, 1), 10);
+        final int SIZE = Math.max(Math.max(limit, 1), 10);
 
         if (cursor == null) {
             return commentRepository.findSlice(postId, PageRequest.of(0, SIZE));

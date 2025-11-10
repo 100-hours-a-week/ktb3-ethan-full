@@ -23,7 +23,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             """
             select c
             from Comment c
-            where c.post.id = :postId and c.id < :cursorId
+            where c.post.id = :postId and c.id >= :cursorId
             """
     )
     Slice<Comment> findSlice(@Param("postId") Long postId, @Param("cursorId") Long cursorId, Pageable pageable);

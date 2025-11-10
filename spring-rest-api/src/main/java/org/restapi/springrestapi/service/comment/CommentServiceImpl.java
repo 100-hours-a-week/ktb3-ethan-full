@@ -68,7 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
     private int calcNextCursor(List<Comment> commentList) {
         long lastIdDesc = commentList.get(commentList.size() - 1).getId();
-        return (int) Math.max(lastIdDesc - 1, 0);
+        return (int) Math.max(lastIdDesc, 0) + 1;
     }
 
 	@Override
@@ -87,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
         userValidator.validateUserExists(userId);
         postValidator.validatePostExists(postId);
         commentValidator.validateCommentExists(id);
-        commentValidator.validateOwner(userId, id);
+        commentValidator.validateOwner(id, userId);
 
         (commentFinder.findById(id)).changePost(null);
 
