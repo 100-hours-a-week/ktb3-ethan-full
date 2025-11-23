@@ -25,21 +25,42 @@ public class UploadController {
 	private final AuthContext auth;
 	private final FileStorageService fileStorageService;
 
-	@Operation(summary = "이미지 업로드", description = "로그인 사용자의 이미지를 업로드하고 URL을 반환합니다.")
+	@Operation(summary = "사용자 프로필 이미지 업로드 api", description = "사용자의 이미지를 업로드하고 URL을 반환합니다.")
 	@ApiResponses({
 		@ApiResponse(responseCode = "201", description = "업로드 성공"),
 		@ApiResponse(responseCode = "401", description = "인증 필요"),
 		@ApiResponse(responseCode = "400", description = "잘못된 파일 형식 또는 요청")
 	})
-	@PostMapping(
-		value = "/upload/image",
-		consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<APIResponse<UploadImageResponse>> uploadImage(
-		@RequestPart("image") MultipartFile image
-	) {
-		final Long id = auth.requiredUserId();
-		String url = fileStorageService.saveImage(id, image);
-		return ResponseEntity.status(201)
-			.body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, new UploadImageResponse(url)));
-	}
+    @PostMapping(
+            value = "/upload/profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<APIResponse<UploadImageResponse>> uploadProfileImage(
+            @RequestPart("image") MultipartFile image
+    ) {
+        String url = fileStorageService.saveProfileImage(image);
+
+        return ResponseEntity.status(201)
+                .body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, new UploadImageResponse(url)));
+    }
+
+    @Operation(summary = "게시글 대표 이미지 업로드 api", description = "게시글 대표 이미지를 업로드하고 URL을 반환합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "업로드 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 필요"),
+            @ApiResponse(responseCode = "400", description = "잘못된 파일 형식 또는 요청")
+    })
+    @PostMapping(
+            value = "/upload/post",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<APIResponse<UploadImageResponse>> uploadPostImage(
+            @RequestPart("image") MultipartFile image
+    ) {
+        auth.requiredUserId();
+        String url = fileStorageService.savePostImage(image);
+
+        return ResponseEntity.status(201)
+                .body(APIResponse.ok(SuccessCode.REGISTER_SUCCESS, new UploadImageResponse(url)));
+    }
 }

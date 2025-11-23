@@ -17,9 +17,10 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
+
 app:
   data:
     dir: ./data
   upload:
-    base-dir: ./uploads
-    public-base-url: http://localhost:8080/uploads
+    base-dir: "./upload"              # 프로젝트루트/upload
+    public-base-url: "http://localhost:8080/upload"

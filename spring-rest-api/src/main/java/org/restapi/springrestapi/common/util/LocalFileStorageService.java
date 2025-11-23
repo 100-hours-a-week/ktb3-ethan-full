@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.restapi.springrestapi.exception.AppException;
@@ -21,66 +22,89 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class LocalFileStorageService implements FileStorageService {
 
-	@Value("${app.upload.base-dir}")
-	private String baseDir;
+    @Value("${app.upload.base-dir}")
+    private String baseDir;
 
-	@Value("${app.upload.public-base-url}")
-	private String publicBaseUrl;
+    @Value("${app.upload.public-base-url}")
+    private String publicBaseUrl;
 
-	private static final Set<String> ALLOWED_EXTENSIONS = Set.of(
-		"png", "jpg", "jpeg"
-	);
+    private static final Set<String> ALLOWED_EXTENSIONS = Set.of("png", "jpg", "jpeg");
 
-	@Override
-	public String saveImage(Long userId, MultipartFile file) {
-		if (userId == null || userId <= 0 || file == null || file.isEmpty())
-			throw new AppException(CommonErrorCode.INVALID_REQUEST);
+    @Override
+    public String saveProfileImage(MultipartFile file) {
+        String ext = validateAndGetExtension(file);
 
-		String fileName = Optional.ofNullable(
-			file.getOriginalFilename()
-		).orElse("file");
-		String fileExtension = getFileExtension(fileName);
-		if  (!ALLOWED_EXTENSIONS.contains(fileExtension)) {
-			throw new AppException(UploadErrorCode.INVALID_FILE_TYPE);
-		}
+        String randomName = UUID.randomUUID().toString();
+        String relativePath = Paths.get("profile", randomName + "." + ext).toString();
 
-		Path folder = Paths.get(baseDir, String.valueOf(userId)).normalize();
-		try {
-			Files.createDirectories(folder);
-		} catch (IOException ignore) {}
-		try {
-			FileUtils.cleanDirectory(folder.toFile());
-		} catch (IOException ignore) {
-			throw new AppException(CommonErrorCode.INTERNAL);
-		}
+        return save(relativePath, file);
+    }
 
-		fileName = "profile-img" + fileExtension;
-		Path dest = folder.resolve(fileName).normalize();
+    @Override
+    public String savePostImage(MultipartFile file) {
+        String ext = validateAndGetExtension(file);
 
-		Path tmp = folder.resolve(fileName + ".tmp");
-		try (InputStream in = file.getInputStream()) {
-			FileUtils.copyInputStreamToFile(in, tmp.toFile());
-			try {
-				Files.move(tmp, dest, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-			} catch (AtomicMoveNotSupportedException ex) {
-				Files.move(tmp, dest, StandardCopyOption.REPLACE_EXISTING);
-			}
-		} catch (IOException e) {
-			try {
-				Files.deleteIfExists(tmp);
-			} catch (IOException ignored) {}
-			throw new AppException(CommonErrorCode.INTERNAL);
-		}
+        String randomName = UUID.randomUUID().toString();
+        String relativePath = Paths.get("post", randomName + "." + ext).toString();
 
-		String ref = userId.toString() + "/" + fileName;
-		return publicBaseUrl + (publicBaseUrl.endsWith("/") ? "" : "/") + ref;
-	}
+        return save(relativePath, file);
+    }
 
-	private String getFileExtension(String fileName) {
-		final int lastDot =  fileName.lastIndexOf('.');
-		if (lastDot == -1) {
-			return "png";
-		}
-		return fileName.substring(lastDot + 1).toLowerCase();
-	}
+    private String save(String relativePath, MultipartFile file) {
+        Path dest = Paths.get(baseDir).resolve(relativePath).normalize();
+        Path folder = dest.getParent();
+
+        try {
+            Files.createDirectories(folder);
+        } catch (IOException e) {
+            throw new AppException(CommonErrorCode.INTERNAL);
+        }
+
+        Path tmp = folder.resolve(dest.getFileName() + ".tmp");
+
+        try (InputStream in = file.getInputStream()) {
+            FileUtils.copyInputStreamToFile(in, tmp.toFile());
+            try {
+                Files.move(tmp, dest,
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException ex) {
+                Files.move(tmp, dest, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException e) {
+            try { Files.deleteIfExists(tmp); } catch (IOException ignored) {}
+            throw new AppException(CommonErrorCode.INTERNAL);
+        }
+
+        return toPublicUrl(relativePath);
+    }
+
+    private String toPublicUrl(String relativePath) {
+        String base = publicBaseUrl.endsWith("/") ? publicBaseUrl : publicBaseUrl + "/";
+        return base + relativePath.replace("\\", "/");
+    }
+
+    private String validateAndGetExtension(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new AppException(CommonErrorCode.INVALID_REQUEST);
+        }
+
+        String originalName = Optional.ofNullable(file.getOriginalFilename())
+                .orElseThrow(() -> new AppException(CommonErrorCode.INVALID_REQUEST));
+
+        String ext = getFileExtension(originalName);
+
+        if (!ALLOWED_EXTENSIONS.contains(ext)) {
+            throw new AppException(UploadErrorCode.INVALID_FILE_TYPE);
+        }
+        return ext;
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot == -1 || lastDot == fileName.length() - 1) {
+            throw new AppException(UploadErrorCode.INVALID_FILE_TYPE);
+        }
+        return fileName.substring(lastDot + 1).toLowerCase();
+    }
 }
