@@ -17,9 +17,26 @@ spring:
     hibernate:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQLDialect
+
+jwt:
+  access:
+    ttl: 30m
+    secret: "access_token_key_that_should_not_be_upload_on_github_and_must_be_32chars_minimum_required"
+  refresh:
+    ttl: 14d
+    secret: "refresh_token_key_that_should_not_be_upload_on_github_and_must_be_32chars_minimum_required"
+
 app:
   data:
     dir: ./data
   upload:
-    base-dir: ./uploads
-    public-base-url: http://localhost:8080/uploads
+    base-dir: "./upload"              # 프로젝트루트/upload
+    public-base-url: "http://localhost:8080/upload"
+
+logging:
+  level:
+    root: INFO
+    com.example.learnspringsecurity: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    io.jsonwebtoken: DEBUG

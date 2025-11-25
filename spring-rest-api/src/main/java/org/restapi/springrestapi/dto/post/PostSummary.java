@@ -13,6 +13,8 @@ public record PostSummary(
 	Long userId,
     String authorNickname,
 	String title,
+    String content,
+    String thumbnailImageUrl,
 	int likeCount,
     int commentCount,
     int viewCount,

@@ -23,7 +23,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 @SQLDelete(sql = "UPDATE `user` SET deleted_at = NOW() WHERE id = ?")
 @Where(clause = "deleted_at IS NULL")
-
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

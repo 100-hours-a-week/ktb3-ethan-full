@@ -2,13 +2,14 @@ package org.restapi.springrestapi.exception.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
 public enum UploadErrorCode implements ErrorCode {
-	FILE_SIZE_OVER(400, "file_size_over"),
-	INVALID_FILE_TYPE(400, "invalid_file_type");
+	FILE_SIZE_OVER(HttpStatus.BAD_REQUEST, "파일 최대 크기 초과"),
+	INVALID_FILE_TYPE(HttpStatus.BAD_REQUEST, "지원되지 않는 파일 타입");
 
-	private final int status;
+	private final HttpStatus status;
 	private final String message;
 }

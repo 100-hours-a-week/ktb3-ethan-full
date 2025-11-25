@@ -1,7 +1,9 @@
 package org.restapi.springrestapi.exception.code;
 
 
+import org.springframework.http.HttpStatus;
+
 public interface ErrorCode {
-	int getStatus();
+	HttpStatus getStatus();
 	String getMessage();
 }
