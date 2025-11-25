@@ -8,10 +8,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum PostErrorCode implements ErrorCode {
-	POST_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "post_not_found"),
-	PERMISSION_DENIED(HttpStatus.FORBIDDEN.value(), "permission_denied")
+	POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
 	;
 
-	private final int status;
+	private final HttpStatus status;
 	private final String message;
 }

@@ -1,6 +1,7 @@
 package org.restapi.springrestapi.validator;
 
 import org.restapi.springrestapi.exception.AppException;
+import org.restapi.springrestapi.exception.code.AuthErrorCode;
 import org.restapi.springrestapi.exception.code.PostErrorCode;
 import org.restapi.springrestapi.finder.PostFinder;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ public class PostValidatorImpl implements PostValidator {
     @Override
     public void validateAuthorPermission(Long postId, Long authorId) {
         if (!postFinder.existsByIdAndAuthorId(postId, authorId)) {
-            throw new AppException(PostErrorCode.PERMISSION_DENIED);
+            throw new AppException(AuthErrorCode.FORBIDDEN);
         }
     }
 

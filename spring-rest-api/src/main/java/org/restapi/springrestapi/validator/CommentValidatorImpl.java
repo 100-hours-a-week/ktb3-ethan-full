@@ -1,6 +1,7 @@
 package org.restapi.springrestapi.validator;
 
 import org.restapi.springrestapi.exception.AppException;
+import org.restapi.springrestapi.exception.code.AuthErrorCode;
 import org.restapi.springrestapi.exception.code.CommentErrorCode;
 import org.restapi.springrestapi.finder.CommentFinder;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class CommentValidatorImpl implements CommentValidator {
     @Override
     public void validateOwner(Long commentId, Long userId) {
         if (!commentFinder.existsByIdAndUserId(commentId, userId)) {
-            throw new AppException(CommentErrorCode.COMMENT_FORBIDDEN);
+            throw new AppException(AuthErrorCode.FORBIDDEN);
         }
     }
 }
